@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Guacamole Connections</title>
+</head>
+<body>
+    <h1>Available Guacamole Connections</h1>
+    <div id="connections"></div>
+
+    <script>
+        const LOCAL_PROXY_ENDPOINT = 'http://localhost:8081/connections';
+        const AUTH_TOKEN = 'E495F4510FFFA0EF1930A0D479693D54FC0714D25592A13B791CD3A35EC6DA12';
+
+        async function fetchConnections() {
+            try {
+              const response = await fetch(LOCAL_PROXY_ENDPOINT + '?token=' + AUTH_TOKEN);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                console.log("Response data:", data); // Logging the response data
+
+                const connectionsList = document.getElementById('connections');
+                connectionsList.innerHTML = '';
+
+                /* 
+
+                2024/01/18 01:32:58 Guacamole server response: {"1":{"name":"teste","identifier":"1","parentIdentifier":"ROOT","protocol":"rdp","attributes":{"guacd-encryption":null,"failover-only":null,"weight":null,"max-connections":null,"guacd-hostname":null,"guacd-port":null,"max-connections-per-user":null},"activeConnections":0,"lastActive":1705548176786}}
+
+                */
+
+                for (const connection of Object.values(data)) {
+                    const connectionElement = document.createElement('div');
+                    connectionElement.innerHTML = `
+                        <h2>${connection.name}</h2>
+                        <p>Identifier: ${connection.identifier}</p>
+                        <p>Parent Identifier: ${connection.parentIdentifier}</p>
+                        <p>Protocol: ${connection.protocol}</p>
+                        <p>Active Connections: ${connection.activeConnections}</p>
+                        <p>Last Active: ${connection.lastActive}</p>
+                    `;
+                    connectionsList.appendChild(connectionElement);
+                }
+
+
+            } catch (error) {
+                console.error('Failed to fetch connections:', error);
+            }
+        }
+
+        fetchConnections();
+    </script>
+</body>
+</html>
