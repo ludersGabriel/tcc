@@ -31,7 +31,6 @@ const clientOptions = {
 
 const serverOptions = {
   server,
-  path: '/guac',
 }
 
 new GuacamoleLite(
@@ -43,7 +42,7 @@ new GuacamoleLite(
 app.get('/getToken', (req, res) => {
   const settings: ConnectionSettings = {
     hostname: '10.1.1.202',
-    port: '3392',
+    port: 3341,
     'create-drive-path': true,
     'disable-auth': true,
     'enable-drive': true,
@@ -54,7 +53,9 @@ app.get('/getToken', (req, res) => {
 
   const token = encryptToken(settings)
 
-  res.send(token)
+  console.log({ token })
+
+  res.send({ token })
 })
 
 app.get('/', (req, res) => {
