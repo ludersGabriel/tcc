@@ -25,9 +25,7 @@ const tokenObject = {
 
 export interface ConnectionSettings {
   hostname: string
-  port: string
-  username: string
-  password: string
+  port: number
   'enable-drive': boolean
   'create-drive-path': boolean
   security: string
