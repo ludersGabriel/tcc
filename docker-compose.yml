@@ -6,8 +6,6 @@ services:
     restart: always
     ports:
       - "4822:4822"
-    environment:
-      - GUACD_LOG_LEVEL=debug
 #   guacamole:
 #     image: guacamole/guacamole
 #     restart: always

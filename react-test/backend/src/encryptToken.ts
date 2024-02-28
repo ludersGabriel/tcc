@@ -26,12 +26,11 @@ const tokenObject = {
 export interface ConnectionSettings {
   hostname: string
   port: number
-  'enable-drive': boolean
-  'create-drive-path': boolean
   security: string
   'ignore-cert': boolean
   'enable-wallpaper': boolean
   'disable-auth': boolean
+  'server-layout': string
 }
 
 export interface TokenObject {

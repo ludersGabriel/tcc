@@ -41,14 +41,13 @@ new GuacamoleLite(
 
 app.get('/getToken', (req, res) => {
   const settings: ConnectionSettings = {
-    hostname: '192.168.1.4',
+    hostname: '10.204.235.108',
     port: 3341,
-    'create-drive-path': true,
     'disable-auth': true,
-    'enable-drive': true,
     'enable-wallpaper': true,
     'ignore-cert': true,
     security: 'any',
+    'server-layout': 'en-us-qwerty',
   }
 
   const token = encryptToken(settings)

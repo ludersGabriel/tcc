@@ -61,7 +61,7 @@ export default function Guac() {
       console.log('Error: ' + JSON.stringify(error))
     }
     
-    guac.onleave = () => guac?.disconnect()
+    guac.onleave = () => disconnect()
 
     const guacElement = guac.getDisplay().getElement()
     const displayContainer = document.getElementById('displayContainer')
@@ -97,7 +97,7 @@ export default function Guac() {
       const {guac, token} = await guacSetup()
       if(!guac || !token) return
 
-      console.log({token})
+      console.log('hmmmm')
       guac.connect('token=' + token)
     }
     catch (err) {
