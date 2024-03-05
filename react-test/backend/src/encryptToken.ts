@@ -26,6 +26,8 @@ const tokenObject = {
 export interface ConnectionSettings {
   hostname: string
   port: number
+  width: number
+  height: number
   security: string
   'ignore-cert': boolean
   'enable-wallpaper': boolean

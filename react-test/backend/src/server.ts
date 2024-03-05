@@ -48,6 +48,8 @@ app.get('/getToken', (req, res) => {
     'ignore-cert': true,
     security: 'any',
     'server-layout': 'en-us-qwerty',
+    width: 1280,
+    height: 720,
   }
 
   const token = encryptToken(settings)

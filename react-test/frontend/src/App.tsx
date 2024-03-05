@@ -12,7 +12,7 @@ function RenderApp() {
     <>
       <div
         id="displayContainer"
-        className="w-full flex justify-center items-center bg-black"
+        className="w-full h-full overflow-hidden flex justify-center items-center bg-black"
       ></div>
     </>
   );
