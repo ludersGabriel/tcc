@@ -1,21 +1,22 @@
-import Guacamole from 'guacamole-common-js'
-import { useEffect, useState } from 'react'
+import Guacamole from 'guacamole-common-js';
+import { useCallback, useEffect, useState } from 'react';
+import { useGuacToken } from '../../api/guac-token/GuacToken.query';
 
-export default function Guac() {
-  const [guac, setGuac] = useState<Guacamole.Client | null>(null)
-  const [keyboard, setKeyboard] = useState<Guacamole.Keyboard | null>(null)
-  const [token, setToken] = useState<string | null>(null)
+export default function useGuac() {
+  const [guac, setGuac] = useState<Guacamole.Client | null>(null);
+  const { token } = useGuacToken();
 
   useEffect(() => {
-    // Function to be called when the page is about to be unloaded
+    const { guac, keyboard } = guacSetup();
+
     const handleUnload = () => {
-      if(keyboard){
-        keyboard.onkeydown = null
-        keyboard.onkeyup = null
-      } 
-        
+      if (keyboard) {
+        keyboard.onkeydown = null;
+        keyboard.onkeyup = null;
+      }
+
       guac?.disconnect();
-      
+
       // Optionally, prevent default action and display a confirmation dialog
       // event.preventDefault();
       // return (event.returnValue = 'Are you sure you want to leave?');
@@ -26,90 +27,63 @@ export default function Guac() {
     return () => {
       window.removeEventListener('beforeunload', handleUnload);
     };
-  }, [guac, keyboard]);
+  }, []);
 
-  const disconnect = () => {
-    if(keyboard){
-      keyboard.onkeydown = null
-      keyboard.onkeyup = null
-    } 
+  const guacConnect = useCallback(() => {
+    if (!guac || !token) return;
 
-    const displayContainer = document.getElementById('displayContainer')
-    
-    // remove all children
-    while (displayContainer?.firstChild) {
-      displayContainer.removeChild(displayContainer.firstChild)
+    try {
+      guac.connect('token=' + token);
+    } catch (err) {
+      console.log(err);
     }
-    
-    guac?.disconnect()
-  }
+  }, [guac, token]);
 
-  const guacSetup = async () => {
-    const response = await fetch('http://localhost:3000/getToken')
+  useEffect(() => {
+    guacConnect();
+  }, [guacConnect]);
 
-    const data = await response.json()
-    const token = data.token
-    setToken(token)
+  const guacSetup = () => {
+    const tunnel = new Guacamole.WebSocketTunnel(
+      'ws://localhost:3000/',
+    );
+    const guac = new Guacamole.Client(tunnel);
 
-    const url = 'ws://localhost:3000/'
-    const tunnel = new Guacamole.WebSocketTunnel(url)
-    const guac = new Guacamole.Client(tunnel)
-
-    setGuac(guac)
+    setGuac(guac);
 
     guac.onerror = (error) => {
-      console.log('Error: ' + JSON.stringify(error))
-    }
-    
-    guac.onleave = () => guac?.disconnect()
+      console.log('Error: ' + JSON.stringify(error));
+    };
 
-    const guacElement = guac.getDisplay().getElement()
-    const displayContainer = document.getElementById('displayContainer')
+    guac.onleave = () => guac?.disconnect();
 
-    const canvas = guacElement.querySelectorAll('canvas')
+    const guacElement = guac.getDisplay().getElement();
+    const displayContainer = document.getElementById(
+      'displayContainer',
+    );
 
-    canvas.forEach((canva) => canva.style.zIndex = '1000')
+    const canvas = guacElement.querySelectorAll('canvas');
 
-    displayContainer?.appendChild(guacElement)
+    canvas.forEach((canva) => (canva.style.zIndex = '1000'));
 
-    const mouse = new Guacamole.Mouse(guacElement)
+    displayContainer?.appendChild(guacElement);
+
+    const mouse = new Guacamole.Mouse(guacElement);
 
     mouse.onEach(['mousedown', 'mouseup', 'mousemove'], (event) => {
-      guac.sendMouseState(event.state, true)
-    })
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      guac.sendMouseState((event as any).state, true);
+    });
 
-    const keyboard = new Guacamole.Keyboard(document)
+    const keyboard = new Guacamole.Keyboard(document);
 
     keyboard.onkeydown = (keysym) => {
-      guac.sendKeyEvent(1, keysym)
-    }
+      guac.sendKeyEvent(1, keysym);
+    };
     keyboard.onkeyup = (keysym) => {
-      guac.sendKeyEvent(0, keysym)
-    }
+      guac.sendKeyEvent(0, keysym);
+    };
 
-    setKeyboard(keyboard)
-
-    return { guac, token }
-  }
-
-  const handleClick = async () => {
-    try {
-      const {guac, token} = await guacSetup()
-      if(!guac || !token) return
-
-      console.log({token})
-      guac.connect('token=' + token)
-    }
-    catch (err) {
-      console.log(err)
-    }
-  }
-
-  return (
-    <>
-      <button onClick={handleClick} className='m-2 p-2 border-black border-2'>Conectar</button>
-      <button onClick={disconnect} className='m-2 p-2 border-black border-2'>Desconectar</button>
-    </>
-  )
-
+    return { guac, keyboard };
+  };
 }

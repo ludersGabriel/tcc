@@ -1,14 +1,29 @@
-import Guac from "./components/guac/Guac"
+import {
+  QueryClient,
+  QueryClientProvider,
+} from '@tanstack/react-query';
+import useGuac from './components/guac/Guac';
 
-function App() {
+const queryClient = new QueryClient();
 
+function RenderApp() {
+  useGuac();
   return (
     <>
-      <h1 className='border-2 border-black p-2 m-2'>vite with tailwind</h1>
-      <Guac />
-      <div id="displayContainer" className="w-full flex justify-center items-center bg-black"></div>
+      <div
+        id="displayContainer"
+        className="w-full flex justify-center items-center bg-black"
+      ></div>
     </>
-  )
+  );
 }
 
-export default App
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <RenderApp />
+    </QueryClientProvider>
+  );
+}
+
+export default App;
