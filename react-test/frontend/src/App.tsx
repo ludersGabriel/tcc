@@ -2,26 +2,24 @@ import {
   QueryClient,
   QueryClientProvider,
 } from '@tanstack/react-query';
-import useGuac from './components/guac/Guac';
+
+import { routeTree } from './routeTree.gen';
+import { RouterProvider, createRouter } from '@tanstack/react-router';
 
 const queryClient = new QueryClient();
 
-function RenderApp() {
-  useGuac();
-  return (
-    <>
-      <div
-        id="displayContainer"
-        className="w-full h-full overflow-hidden flex justify-center items-center bg-black"
-      ></div>
-    </>
-  );
+const router = createRouter({ routeTree });
+
+declare module '@tanstack/react-router' {
+  interface Register {
+    router: typeof router;
+  }
 }
 
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <RenderApp />
+      <RouterProvider router={router} />
     </QueryClientProvider>
   );
 }

@@ -41,7 +41,7 @@ new GuacamoleLite(
 
 app.get('/getToken', (req, res) => {
   const settings: ConnectionSettings = {
-    hostname: '10.1.1.221',
+    hostname: '192.168.50.197',
     port: 3341,
     'disable-auth': true,
     'enable-wallpaper': true,

@@ -1,21 +1,33 @@
 import Guacamole from 'guacamole-common-js';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useGuacToken } from '../../api/guac-token/GuacToken.query';
 
 export default function useGuac() {
-  const [guac, setGuac] = useState<Guacamole.Client | null>(null);
+  const guacRef = useRef<Guacamole.Client | null>(null);
+  const keyboardRef = useRef<Guacamole.Keyboard | null>(null);
   const { token } = useGuacToken();
 
+  const guacDisconnect = useCallback(() => {
+    if (keyboardRef.current) {
+      keyboardRef.current.onkeydown = null;
+      keyboardRef.current.onkeyup = null;
+    }
+
+    const displayContainer = document.getElementById(
+      'displayContainer',
+    );
+
+    // remove all children
+    while (displayContainer?.firstChild) {
+      displayContainer.removeChild(displayContainer.firstChild);
+    }
+
+    guacRef.current?.disconnect();
+  }, []);
+
   useEffect(() => {
-    const { guac, keyboard } = guacSetup();
-
     const handleUnload = () => {
-      if (keyboard) {
-        keyboard.onkeydown = null;
-        keyboard.onkeyup = null;
-      }
-
-      guac?.disconnect();
+      guacDisconnect();
 
       // Optionally, prevent default action and display a confirmation dialog
       // event.preventDefault();
@@ -27,63 +39,65 @@ export default function useGuac() {
     return () => {
       window.removeEventListener('beforeunload', handleUnload);
     };
-  }, []);
-
-  const guacConnect = useCallback(() => {
-    if (!guac || !token) return;
-
-    try {
-      guac.connect('token=' + token);
-    } catch (err) {
-      console.log(err);
-    }
-  }, [guac, token]);
+  }, [guacDisconnect]);
 
   useEffect(() => {
-    guacConnect();
-  }, [guacConnect]);
+    if (!guacRef.current && !keyboardRef.current) {
+      const tunnel = new Guacamole.WebSocketTunnel(
+        'ws://localhost:3000/',
+      );
+      const guac = new Guacamole.Client(tunnel);
 
-  const guacSetup = () => {
-    const tunnel = new Guacamole.WebSocketTunnel(
-      'ws://localhost:3000/',
-    );
-    const guac = new Guacamole.Client(tunnel);
+      guacRef.current = guac;
 
-    setGuac(guac);
+      guac.onerror = (error) => {
+        console.log('Error: ' + JSON.stringify(error));
+      };
 
-    guac.onerror = (error) => {
-      console.log('Error: ' + JSON.stringify(error));
+      guac.onleave = () => guac?.disconnect();
+
+      const guacElement = guac.getDisplay().getElement();
+
+      const mouse = new Guacamole.Mouse(guacElement);
+
+      mouse.onEach(['mousedown', 'mouseup', 'mousemove'], (event) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        guac.sendMouseState((event as any).state, true);
+      });
+
+      const keyboard = new Guacamole.Keyboard(document);
+
+      keyboardRef.current = keyboard;
+    }
+
+    if (token && guacRef.current && keyboardRef.current) {
+      try {
+        const guacElement = guacRef.current.getDisplay().getElement();
+        const displayContainer = document.getElementById(
+          'displayContainer',
+        );
+
+        const canvas = guacElement.querySelectorAll('canvas');
+
+        canvas.forEach((canva) => (canva.style.zIndex = '1000'));
+
+        displayContainer?.appendChild(guacElement);
+
+        keyboardRef.current.onkeydown = (keysym) => {
+          guacRef.current!.sendKeyEvent(1, keysym);
+        };
+        keyboardRef.current.onkeyup = (keysym) => {
+          guacRef.current!.sendKeyEvent(0, keysym);
+        };
+
+        guacRef.current.connect('token=' + token);
+      } catch (err) {
+        console.log(err);
+      }
+    }
+
+    return () => {
+      guacDisconnect();
     };
-
-    guac.onleave = () => guac?.disconnect();
-
-    const guacElement = guac.getDisplay().getElement();
-    const displayContainer = document.getElementById(
-      'displayContainer',
-    );
-
-    const canvas = guacElement.querySelectorAll('canvas');
-
-    canvas.forEach((canva) => (canva.style.zIndex = '1000'));
-
-    displayContainer?.appendChild(guacElement);
-
-    const mouse = new Guacamole.Mouse(guacElement);
-
-    mouse.onEach(['mousedown', 'mouseup', 'mousemove'], (event) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      guac.sendMouseState((event as any).state, true);
-    });
-
-    const keyboard = new Guacamole.Keyboard(document);
-
-    keyboard.onkeydown = (keysym) => {
-      guac.sendKeyEvent(1, keysym);
-    };
-    keyboard.onkeyup = (keysym) => {
-      guac.sendKeyEvent(0, keysym);
-    };
-
-    return { guac, keyboard };
-  };
+  }, [guacDisconnect, token]);
 }
