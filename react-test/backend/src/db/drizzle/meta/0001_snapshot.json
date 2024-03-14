@@ -1,6 +1,6 @@
 {
-  "id": "f9286385-7770-4966-bd0c-aa14f31b68da",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "0a975160-396d-43a6-8d37-e1b3faf97628",
+  "prevId": "f9286385-7770-4966-bd0c-aa14f31b68da",
   "version": "5",
   "dialect": "pg",
   "tables": {
@@ -18,13 +18,13 @@
           "name": "username",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "password": {
           "name": "password",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         }
       },
       "indexes": {
@@ -38,7 +38,15 @@
       },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "users_username_unique": {
+          "name": "users_username_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "username"
+          ]
+        }
+      }
     }
   },
   "enums": {},

@@ -1,17 +1,7 @@
 import GuacamoleLite from 'guacamole-lite'
-import express from 'express'
 import http from 'http'
-import cors from 'cors'
-import {
-  CIPHER,
-  ConnectionSettings,
-  KEY,
-  encryptToken,
-} from './encryptToken'
-
-const app = express()
-
-app.use(cors())
+import { CIPHER, KEY } from './encryptToken'
+import app from './app'
 
 const server = http.createServer(app)
 
@@ -39,26 +29,6 @@ new GuacamoleLite(
   clientOptions
 )
 
-app.get('/getToken', (req, res) => {
-  const settings: ConnectionSettings = {
-    hostname: '192.168.50.197',
-    port: 3341,
-    'disable-auth': true,
-    'enable-wallpaper': true,
-    'ignore-cert': true,
-    security: 'any',
-    'server-layout': 'en-us-qwerty',
-    width: 1280,
-    height: 720,
-  }
-
-  const token = encryptToken(settings)
-
-  console.log({ token })
-
-  res.send({ token })
-})
-
 app.get('/', (req, res) => {
   res.send({
     hello: 'world',
@@ -66,3 +36,18 @@ app.get('/', (req, res) => {
 })
 
 server.listen(3000)
+
+function shutdown() {
+  console.log('Shutting down gracefully...')
+
+  // Close the HTTP server
+  server.close(() => {
+    console.log('HTTP server closed.')
+
+    process.exit(0)
+  })
+}
+
+// Handle ^C and termination signals
+process.on('SIGINT', shutdown)
+process.on('SIGTERM', shutdown)

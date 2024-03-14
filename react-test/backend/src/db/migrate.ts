@@ -7,7 +7,6 @@ const migrationClient = postgres(
   config.dbCredentials.connectionString,
   { max: 1 }
 )
-// missing config
 migrate(drizzle(migrationClient), {
   migrationsFolder: config.out,
   migrationsSchema: config.schema,
