@@ -1,0 +1,48 @@
+{
+  "version": "5",
+  "dialect": "pg",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1710383877948,
+      "tag": "0000_whole_nova",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1710386282586,
+      "tag": "0001_young_masked_marvel",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1710426502638,
+      "tag": "0002_nifty_korg",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1710445360354,
+      "tag": "0003_tranquil_wolfsbane",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1710468410399,
+      "tag": "0004_yellow_eternals",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1710469071180,
+      "tag": "0005_smart_guardian",
+      "breakpoints": true
+    }
+  ]
+}
