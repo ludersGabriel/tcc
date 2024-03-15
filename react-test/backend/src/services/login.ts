@@ -1,6 +1,6 @@
 import { User } from '../db/schema'
 import { verifyHash } from '../middleware/auth'
-import { getUserByUsername } from '../models/users'
+import { getUserByUsername } from '../repositories/users'
 
 export async function login(
   username: string,

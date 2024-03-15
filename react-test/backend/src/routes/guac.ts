@@ -1,29 +1,49 @@
 import express from 'express'
-import {
-  ConnectionSettings,
-  encryptToken,
-} from '../encryptToken'
+import { encryptToken } from '../encryptToken'
+import { getVmsByIdService } from '../services/vms'
+import { CustomRequest } from '../middleware/auth'
 
 const router = express.Router()
 
-router.get('/getToken', (req, res) => {
-  const settings: ConnectionSettings = {
-    hostname: '192.168.50.197',
-    port: 3341,
-    'disable-auth': true,
-    'enable-wallpaper': true,
-    'ignore-cert': true,
-    security: 'any',
-    'server-layout': 'en-us-qwerty',
-    width: 1280,
-    height: 720,
+router.get('/', async (req: CustomRequest, res) => {
+  try {
+    const { vmId } = req.query
+    const user = req.user!
+
+    if (!vmId) {
+      res.status(400).json({
+        message: 'VM ID not provided',
+        status: 400,
+        success: false,
+      })
+      return
+    }
+
+    const vm = await getVmsByIdService(+vmId, user.id)
+
+    if (!vm) {
+      res.status(404).json({
+        message: 'VM not found',
+        status: 404,
+        success: false,
+      })
+      return
+    }
+
+    const { id, name, description, ownerId, ...settings } =
+      vm
+
+    const token = encryptToken(settings)
+
+    res.send({ token })
+  } catch (e) {
+    console.log(JSON.stringify(e))
+    res.status(404).json({
+      message: 'Could not retrieve VM settings',
+      status: 404,
+      success: false,
+    })
   }
-
-  const token = encryptToken(settings)
-
-  console.log({ token })
-
-  res.send({ token })
 })
 
 export default router

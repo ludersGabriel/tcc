@@ -6,11 +6,14 @@ export const SECRET_KEY: Secret = 'YOUR_SECRET'
 export const SALT_ROUNDS = 10
 
 export interface CustomRequest extends Request {
-  token: string | JwtPayload
+  user?: {
+    id: number
+    username: string
+  }
 }
 
 export const auth = async (
-  req: Request,
+  req: CustomRequest,
   res: Response,
   next: NextFunction
 ) => {
@@ -23,8 +26,17 @@ export const auth = async (
       throw new Error()
     }
 
-    const decoded = jwt.verify(token, SECRET_KEY)
-    ;(req as CustomRequest).token = decoded
+    const decoded = jwt.verify(
+      token,
+      SECRET_KEY
+    ) as JwtPayload
+
+    if (decoded.id && decoded.username) {
+      req.user = {
+        id: decoded.id,
+        username: decoded.username,
+      }
+    }
 
     next()
   } catch (err) {

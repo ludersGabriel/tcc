@@ -24,15 +24,15 @@ function RootComponent() {
     <main className='w-full h-full bg-black text-white p-0 m-0'>
       {auth.isAuthenticated ? (
         <>
-          <main className='p-2 flex gap-2 text-lg justify-between'>
-            <Link to={'/'}>teste</Link>
+          <main className='p-3 flex gap-2 text-lg justify-between items-center'>
+            <Link to={'/dashboard'}>Dashboard</Link>
             <button
               onClick={() => {
                 auth.logout()
                 navigate({ to: '/' })
               }}
             >
-              logout
+              Logout
             </button>
           </main>
           <hr />

@@ -22,6 +22,27 @@
       "when": 1710426502638,
       "tag": "0002_nifty_korg",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1710445360354,
+      "tag": "0003_tranquil_wolfsbane",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1710468410399,
+      "tag": "0004_yellow_eternals",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1710469071180,
+      "tag": "0005_smart_guardian",
+      "breakpoints": true
     }
   ]
 }

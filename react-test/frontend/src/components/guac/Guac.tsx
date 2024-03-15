@@ -2,12 +2,16 @@ import Guacamole from 'guacamole-common-js'
 import { useCallback, useEffect, useRef } from 'react'
 import { useGuacToken } from '../../api/guac-token/guacToken.query'
 
-export default function useGuac() {
+type GuacProps = {
+  vmId: number
+}
+
+export default function useGuac({ vmId }: GuacProps) {
   const guacRef = useRef<Guacamole.Client | null>(null)
   const keyboardRef = useRef<Guacamole.Keyboard | null>(
     null
   )
-  const { token } = useGuacToken()
+  const { token } = useGuacToken({ vmId })
 
   const guacDisconnect = useCallback(() => {
     if (keyboardRef.current) {
