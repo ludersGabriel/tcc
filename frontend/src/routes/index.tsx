@@ -3,10 +3,24 @@ import {
   redirect,
   useNavigate,
 } from '@tanstack/react-router'
-import { useState } from 'react'
-import { LoginMutation, useLogin } from '../api/auth/login'
+import { useLogin } from '../api/auth/login'
 import { useAuth } from '../auth'
 import { flushSync } from 'react-dom'
+
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
+
+import { z } from 'zod'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 
 export const Route = createFileRoute('/')({
   beforeLoad: ({ context }) => {
@@ -19,35 +33,27 @@ export const Route = createFileRoute('/')({
   component: Home,
 })
 
+const createLoginSchema = z.object({
+  username: z.string().min(3, 'Username is too short'),
+  password: z.string().min(3, 'Password is too short'),
+})
+
+type LoginForm = z.infer<typeof createLoginSchema>
+
 function Home() {
   const auth = useAuth()
   const navigate = useNavigate()
-
-  const [formData, setFormData] = useState<LoginMutation>({
-    username: '',
-    password: '',
-  })
-
   const login = useLogin()
 
-  const onChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const { name, value } = e.target
+  const form = useForm<LoginForm>({
+    resolver: zodResolver(createLoginSchema),
+    defaultValues: {
+      username: '',
+      password: '',
+    },
+  })
 
-    if (name in formData) {
-      setFormData({
-        ...formData,
-        [name]: value,
-      })
-    }
-  }
-
-  const onSubmit = (
-    e: React.FormEvent<HTMLFormElement>
-  ) => {
-    e.preventDefault()
-
+  const onSubmit = (formData: LoginForm) => {
     login.mutate(formData, {
       onSuccess: (data) => {
         flushSync(() => {
@@ -62,36 +68,54 @@ function Home() {
   }
 
   return (
-    <div className='w-full h-full flex justify-center items-center bg-black text-white'>
-      <form
-        className='flex flex-col gap-2'
-        onSubmit={onSubmit}
-      >
-        <h1 className='text-3xl font-bold'>
-          Big brother is watching you
-        </h1>
-        <input
-          type='text'
-          placeholder='Username'
-          className='p-2 border-2 border-gray-300 rounded-md bg-black'
-          id='username'
-          name='username'
-          value={formData.username}
-          onChange={onChange}
-        />
-        <input
-          type='password'
-          placeholder='Password'
-          className='p-2 border-2 border-gray-300 rounded-md bg-black'
-          id='password'
-          name='password'
-          value={formData.password}
-          onChange={onChange}
-        />
-        <button className='p-2 bg-blue-500 text-white rounded-md'>
-          Login
-        </button>
-      </form>
+    <div className='flex justify-center items-center w-full h-full'>
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className='space-y-8'
+        >
+          <img src='./bigbrother.jpg' />
+          <FormField
+            control={form.control}
+            name='username'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Username</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder='winstonSmith'
+                    {...field}
+                    className='text-black'
+                    autoFocus={true}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name='password'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Password</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder='1234change'
+                    type='password'
+                    {...field}
+                    className='text-black'
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button type='submit' className='mr-2'>
+            Submit
+          </Button>
+        </form>
+      </Form>
     </div>
   )
 }

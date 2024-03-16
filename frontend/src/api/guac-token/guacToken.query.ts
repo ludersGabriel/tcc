@@ -19,25 +19,16 @@ export function useGuacToken({ vmId }: Props) {
       const url = new URL(`${baseUrl}/getToken`)
       url.searchParams.append('vmId', vmId.toString())
 
-      console.log({ url })
-
       return fetch(url, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${auth.token}`,
         },
-      })
-        .then((res) => res.json())
-        .catch((err) => {
-          console.error(err)
-        })
+      }).then((res) => res.json())
     },
     refetchOnWindowFocus: false,
   })
-
-  console.log('fetching token')
-  console.log(query.data?.token)
 
   return {
     isPending: query.isPending,

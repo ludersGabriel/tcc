@@ -4,6 +4,17 @@ import {
   redirect,
 } from '@tanstack/react-router'
 import { useVms } from '../../api/vms/vm.query'
+import CreateVM from '@/components/create-vm/createVM'
+
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 
 export const Route = createFileRoute('/dashboard/')({
   beforeLoad: ({ context }) => {
@@ -20,25 +31,26 @@ function Dashboard() {
   const { vms } = useVms()
 
   return (
-    <table className='w-full text-center my-2'>
-      <caption className='text-2xl'>Telescreens</caption>
-      <thead>
-        <tr className='m-10'>
-          <th>Name</th>
-          <th>Description</th>
-          <th>Status</th>
-          <th>Link</th>
-        </tr>
-      </thead>
-      <tbody>
-        {/* dynamic part goes here */}
-        {vms.map((vm) => {
-          return (
-            <tr key={vm.id}>
-              <td>{vm.name}</td>
-              <td>{vm.description}</td>
-              <td>{vm.status}</td>
-              <td>
+    <>
+      <Table>
+        <TableCaption>
+          A list of your registered vms.
+        </TableCaption>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Name</TableHead>
+            <TableHead>Description</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Link</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {vms.map((vm) => (
+            <TableRow key={vm.id}>
+              <TableCell>{vm.name}</TableCell>
+              <TableCell>{vm.description}</TableCell>
+              <TableCell>{vm.status}</TableCell>
+              <TableCell>
                 <Link
                   to={'/dashboard/vm'}
                   search={{
@@ -47,11 +59,12 @@ function Dashboard() {
                 >
                   access
                 </Link>
-              </td>
-            </tr>
-          )
-        })}
-      </tbody>
-    </table>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+      <CreateVM />
+    </>
   )
 }
