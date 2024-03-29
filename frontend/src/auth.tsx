@@ -7,6 +7,7 @@ import {
   useState,
 } from 'react'
 import { flushSync } from 'react-dom'
+import toast from 'react-hot-toast'
 
 export interface AuthContext {
   isAuthenticated: boolean
@@ -41,6 +42,7 @@ export function AuthProvider({
       setToken(null)
     })
     localStorage.removeItem('token')
+    toast.success('Logged out')
   }, [])
 
   return (

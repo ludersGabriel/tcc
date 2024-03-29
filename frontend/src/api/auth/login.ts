@@ -21,10 +21,6 @@ export function useLogin() {
         body: JSON.stringify({ username, password }),
       })
 
-      if (!resp.ok) {
-        throw new Error('Invalid credentials')
-      }
-
       return resp.json()
     },
   })

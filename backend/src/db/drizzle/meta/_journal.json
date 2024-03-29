@@ -43,6 +43,13 @@
       "when": 1710469071180,
       "tag": "0005_smart_guardian",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1710968805384,
+      "tag": "0006_curious_the_hood",
+      "breakpoints": true
     }
   ]
 }

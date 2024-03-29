@@ -50,14 +50,14 @@ async function main() {
     role: 'admin',
   })
 
-  await db.insert(schema.vms).values({
-    id: 1,
-    hostname: getIPv4(),
-    port: 3341,
-    name: 'gregio',
-    description: 'mapa od gregio',
-    ownerId: 1,
-  })
+  // await db.insert(schema.vms).values({
+  //   id: 1,
+  //   hostname: getIPv4(),
+  //   port: 3341,
+  //   name: 'gregio',
+  //   description: 'mapa od gregio',
+  //   ownerId: 1,
+  // })
 }
 
 main()

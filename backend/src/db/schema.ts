@@ -57,6 +57,8 @@ export const vms = pgTable('vms', {
   'server-layout': text('server_layout')
     .notNull()
     .default('en-us-qwerty'),
+  vboxName: text('vbox_name').notNull(),
+  vboxID: text('vbox_id').notNull(),
 })
 
 export type VM = InferSelectModel<typeof vms>

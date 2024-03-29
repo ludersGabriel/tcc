@@ -21,6 +21,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import toast from 'react-hot-toast'
 
 export const Route = createFileRoute('/')({
   beforeLoad: ({ context }) => {
@@ -61,6 +62,10 @@ function Home() {
         })
 
         localStorage.setItem('token', data.token)
+
+        const t = data.success ? toast.success : toast.error
+
+        t(data.message)
 
         navigate({ to: '/dashboard' })
       },

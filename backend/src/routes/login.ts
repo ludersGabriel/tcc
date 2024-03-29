@@ -25,10 +25,10 @@ router.post('/', async (req, res) => {
       message: 'User logged in',
     })
   } catch (e) {
-    console.log(JSON.stringify(e))
+    console.log(e)
 
     res.status(404).json({
-      message: 'User not found',
+      message: 'Invalid user or password',
       status: 404,
       sucess: false,
     })

@@ -1,6 +1,9 @@
 import express from 'express'
 import { CustomRequest, auth } from '../middleware/auth'
-import { getVmsForUser } from '../services/vms'
+import {
+  createVmService,
+  getVmsForUser,
+} from '../services/vms'
 
 const router = express.Router()
 
@@ -26,6 +29,29 @@ router.get('/', async (req: CustomRequest, res) => {
     res.status(404).json({
       message: 'VMs not found',
       status: 404,
+      success: false,
+    })
+  }
+})
+
+router.post('/create', (req: CustomRequest, res) => {
+  try {
+    const user = req.user!
+    const { name, description } = req.body
+
+    createVmService(name, description, user.id)
+
+    res.status(200).json({
+      status: 200,
+      success: true,
+      message:
+        'Request to create VM received. Check back later.',
+    })
+  } catch (e) {
+    console.log(e)
+    res.status(500).json({
+      message: 'Error creating VM',
+      status: 500,
       success: false,
     })
   }

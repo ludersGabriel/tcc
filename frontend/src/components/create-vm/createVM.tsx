@@ -23,6 +23,8 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { useState } from 'react'
+import { useCreateVm } from '@/api/vms/vm.mutation'
+import toast from 'react-hot-toast'
 
 const createVmSchema = z.object({
   name: z.string().min(3, 'Name is too short'),
@@ -31,10 +33,11 @@ const createVmSchema = z.object({
     .min(3, 'Description is too short'),
 })
 
-type CreateVmForm = z.infer<typeof createVmSchema>
+export type CreateVmForm = z.infer<typeof createVmSchema>
 
 export default function CreateVM() {
   const [open, setOpen] = useState<boolean>(false)
+  const createVm = useCreateVm()
 
   const form = useForm<CreateVmForm>({
     resolver: zodResolver(createVmSchema),
@@ -45,7 +48,13 @@ export default function CreateVM() {
   })
 
   function onSubmit(data: CreateVmForm) {
-    console.log(data)
+    createVm.mutate(data, {
+      onSuccess: (data) => {
+        const t = data.success ? toast.success : toast.error
+
+        t(data.message)
+      },
+    })
 
     handleOpen()
   }

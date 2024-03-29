@@ -37,7 +37,7 @@ export function useVms() {
         },
       }).then((res) => res.json())
     },
-    refetchOnWindowFocus: false,
+    refetchInterval: 5 * 1000,
   })
 
   return {

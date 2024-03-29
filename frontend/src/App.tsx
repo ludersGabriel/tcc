@@ -10,6 +10,8 @@ import {
 } from '@tanstack/react-router'
 import { AuthProvider, useAuth } from './auth'
 
+import { Toaster } from 'react-hot-toast'
+
 const queryClient = new QueryClient()
 
 const router = createRouter({
@@ -42,6 +44,7 @@ function App() {
   return (
     <AuthProvider>
       <InnerApp />
+      <Toaster />
     </AuthProvider>
   )
 }
