@@ -41,3 +41,17 @@ export async function createVm(
 
   return ret
 }
+
+export async function deleteVm(
+  id: string,
+  ownerId: number
+): Promise<VM> {
+  const [ret] = await db
+    .delete(vms)
+    .where(
+      and(eq(vms.vboxID, id), eq(vms.ownerId, ownerId))
+    )
+    .returning()
+
+  return ret
+}

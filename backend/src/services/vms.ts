@@ -1,6 +1,10 @@
 export { getVmsForUser } from '../repositories/vms'
 import { VM } from '../db/schema'
-import { createVm, getVmsById } from '../repositories/vms'
+import {
+  createVm,
+  deleteVm,
+  getVmsById,
+} from '../repositories/vms'
 import os from 'os'
 import net, { AddressInfo } from 'net'
 
@@ -89,4 +93,13 @@ export async function createVmService(
     vmName,
     vmId
   )
+}
+
+export async function deleteVmService(
+  vmId: string,
+  ownerId: number
+): Promise<VM> {
+  await execAsync(`bash src/scripts/delete.sh ${vmId}`)
+
+  return await deleteVm(vmId, ownerId)
 }

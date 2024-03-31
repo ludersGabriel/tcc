@@ -2,6 +2,7 @@ import express from 'express'
 import { CustomRequest, auth } from '../middleware/auth'
 import {
   createVmService,
+  deleteVmService,
   getVmsForUser,
 } from '../services/vms'
 
@@ -51,6 +52,29 @@ router.post('/create', (req: CustomRequest, res) => {
     console.log(e)
     res.status(500).json({
       message: 'Error creating VM',
+      status: 500,
+      success: false,
+    })
+  }
+})
+
+router.post('/delete', async (req: CustomRequest, res) => {
+  try {
+    const user = req.user!
+    const { vboxId } = req.body
+
+    await deleteVmService(vboxId, user.id)
+
+    res.status(200).json({
+      status: 200,
+      success: true,
+      message: 'VM deletion complete!',
+    })
+  } catch (e) {
+    console.log(e)
+
+    res.status(500).json({
+      message: 'Error deleting VM',
       status: 500,
       success: false,
     })

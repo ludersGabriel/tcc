@@ -15,6 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import DeleteVM from '@/components/delete-vm/deleteVM'
 
 export const Route = createFileRoute('/dashboard/')({
   beforeLoad: ({ context }) => {
@@ -42,6 +43,7 @@ function Dashboard() {
             <TableHead>Description</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Link</TableHead>
+            <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -59,6 +61,9 @@ function Dashboard() {
                 >
                   access
                 </Link>
+              </TableCell>
+              <TableCell>
+                <DeleteVM vboxId={vm.vboxID} />
               </TableCell>
             </TableRow>
           ))}

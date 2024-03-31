@@ -20,6 +20,7 @@ type VM = {
   'disable-auth': boolean
   'server-layout': string
   status: string
+  vboxID: string
 }
 
 export function useVms() {
