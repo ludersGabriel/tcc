@@ -14,9 +14,6 @@ const clientOptions = {
     cypher: CIPHER,
     key: KEY,
   },
-  log: {
-    level: 'DEBUG',
-  },
 }
 
 const serverOptions = {

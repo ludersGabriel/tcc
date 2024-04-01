@@ -36,10 +36,6 @@ export default function useGuac({ vmId }: GuacProps) {
   useEffect(() => {
     const handleUnload = () => {
       guacDisconnect()
-
-      // Optionally, prevent default action and display a confirmation dialog
-      // event.preventDefault();
-      // return (event.returnValue = 'Are you sure you want to leave?');
     }
 
     window.addEventListener('beforeunload', handleUnload)

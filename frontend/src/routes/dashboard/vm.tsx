@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import useGuac from '../../components/guac/Guac'
+import useFileTransfer from '@/components/file-transfer/fileTransfer'
 import { z } from 'zod'
 
 const vmSearchSchema = z.object({
@@ -17,6 +18,7 @@ function VM() {
   const { vmId } = Route.useSearch()
 
   useGuac({ vmId })
+  useFileTransfer({ containerId: 'displayContainer', vmId })
 
   return (
     <div

@@ -7,7 +7,7 @@ import {
 } from '../repositories/vms'
 import os from 'os'
 import net, { AddressInfo } from 'net'
-
+import sysPath from 'path'
 import { exec } from 'child_process'
 import { promisify } from 'util'
 const execAsync = promisify(exec)
@@ -102,4 +102,34 @@ export async function deleteVmService(
   await execAsync(`bash src/scripts/delete.sh ${vmId}`)
 
   return await deleteVm(vmId, ownerId)
+}
+
+export async function uploadFilesService(
+  vmId: number,
+  ownerId: number,
+  paths: string[]
+): Promise<void> {
+  const vm = await getVmsById(vmId, ownerId)
+
+  if (!vm) {
+    throw new Error('VM not found')
+  }
+
+  const { vboxID } = vm
+
+  let pathsArg = ''
+
+  for (let path of paths) {
+    const absolute = sysPath.resolve(`./${path}`)
+    pathsArg += `${absolute} `
+  }
+
+  const command = `bash src/scripts/upload.sh ${vboxID} jurgens ${pathsArg}`
+  console.log({ command })
+
+  const { stderr, stdout } = await execAsync(command)
+
+  if (stderr) {
+    throw new Error('Error uploading files')
+  }
 }

@@ -50,3 +50,23 @@ export function useDeleteVm() {
     },
   })
 }
+
+export function useUploadFiles(vboxId: number) {
+  const auth = useAuth()
+
+  return useMutation({
+    mutationKey: ['uploadFiles'],
+    mutationFn: async (data: FormData) => {
+      data.append('vmId', vboxId.toString())
+      const resp = await fetch(`${baseUrl}/vms/upload`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
+        body: data,
+      })
+
+      return resp.json()
+    },
+  })
+}
