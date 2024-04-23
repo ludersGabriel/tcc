@@ -27,7 +27,7 @@ export function AuthProvider({
   children: ReactNode
 }) {
   const [token, setToken] = useState<string | null>(null)
-  const { user, isPending } = useUser()
+  const { user, isPending } = useUser(token ?? '')
   const isAuthenticated = !!user
   const [isLoading, setIsLoading] = useState<boolean>(true)
 

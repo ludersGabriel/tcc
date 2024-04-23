@@ -10,10 +10,8 @@ export type User = {
   role: string
 }
 
-export function useUser() {
+export function useUser(token: string) {
   useQueryClient()
-
-  const token = localStorage.getItem('token') ?? ''
 
   const query = useQuery({
     queryKey: ['user', token],
@@ -26,7 +24,17 @@ export function useUser() {
         },
       }).then((res) => res.json())
     },
+    enabled: !!token,
   })
+
+  if (!token) {
+    return {
+      isPending: false,
+      isFetching: false,
+      user: null,
+      error: null,
+    }
+  }
 
   return {
     isPending: query.isPending,
