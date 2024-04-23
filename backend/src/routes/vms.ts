@@ -7,7 +7,6 @@ import {
   uploadFilesService,
 } from '../services/vms'
 import multer from 'multer'
-import { getVmsById } from '../repositories/vms'
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {

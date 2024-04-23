@@ -33,7 +33,7 @@ export const auth = async (
 
     if (decoded.id && decoded.username) {
       req.user = {
-        id: decoded.id,
+        id: parseInt(decoded.id),
         username: decoded.username,
       }
     }

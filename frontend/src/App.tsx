@@ -34,18 +34,18 @@ function InnerApp() {
   if (auth.isLoading) return null
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} context={{ auth }} />
-    </QueryClientProvider>
+    <RouterProvider router={router} context={{ auth }} />
   )
 }
 
 function App() {
   return (
-    <AuthProvider>
-      <InnerApp />
-      <Toaster />
-    </AuthProvider>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <InnerApp />
+        <Toaster />
+      </AuthProvider>
+    </QueryClientProvider>
   )
 }
 

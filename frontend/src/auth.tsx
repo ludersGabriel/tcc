@@ -8,10 +8,12 @@ import {
 } from 'react'
 import { flushSync } from 'react-dom'
 import toast from 'react-hot-toast'
+import { User, useUser } from './api/user/user.query'
 
 export interface AuthContext {
   isAuthenticated: boolean
   token: string | null
+  user: User | null
   setToken: (token: string | null) => void
   isLoading: boolean
   logout: () => void
@@ -25,7 +27,8 @@ export function AuthProvider({
   children: ReactNode
 }) {
   const [token, setToken] = useState<string | null>(null)
-  const isAuthenticated = !!token
+  const { user, isPending } = useUser()
+  const isAuthenticated = !!user
   const [isLoading, setIsLoading] = useState<boolean>(true)
 
   useEffect(() => {
@@ -48,10 +51,11 @@ export function AuthProvider({
   return (
     <AuthContext.Provider
       value={{
+        user,
         isAuthenticated,
         token,
         setToken,
-        isLoading,
+        isLoading: isPending || isLoading,
         logout,
       }}
     >

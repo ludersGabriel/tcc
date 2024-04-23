@@ -1,6 +1,7 @@
 import Guacamole from 'guacamole-common-js'
 import { useCallback, useEffect, useRef } from 'react'
 import { useGuacToken } from '../../api/guac-token/guacToken.query'
+import toast from 'react-hot-toast'
 
 type GuacProps = {
   vmId: number
@@ -53,12 +54,15 @@ export default function useGuac({ vmId }: GuacProps) {
       const tunnel = new Guacamole.WebSocketTunnel(
         'ws://localhost:3000/'
       )
+
       const guac = new Guacamole.Client(tunnel)
 
       guacRef.current = guac
 
-      guac.onerror = (error) => {
-        console.log('Error: ' + JSON.stringify(error))
+      guac.onerror = () => {
+        toast.error(
+          'Error connecting to vm. Please make sure its running.'
+        )
       }
 
       guac.onleave = () => guac?.disconnect()
