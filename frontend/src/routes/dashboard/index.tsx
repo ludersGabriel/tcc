@@ -16,6 +16,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import DeleteVM from '@/components/delete-vm/deleteVM'
+import ControlVm from '@/components/control-vm/controlVm'
 
 export const Route = createFileRoute('/dashboard/')({
   beforeLoad: ({ context }) => {
@@ -31,7 +32,21 @@ export const Route = createFileRoute('/dashboard/')({
 function Dashboard() {
   const { vms } = useVms()
 
-  console.log({ vms })
+  function decideAction(status: string) {
+    return status === 'running' ? 'stop' : 'start'
+  }
+
+  function decideIp(
+    hostname: string,
+    status: string,
+    localIp: string
+  ) {
+    if (hostname === localIp || status !== 'running') {
+      return '-'
+    }
+
+    return localIp
+  }
 
   return (
     <>
@@ -54,7 +69,13 @@ function Dashboard() {
             <TableRow key={vm.id}>
               <TableCell>{vm.name}</TableCell>
               <TableCell>{vm.description}</TableCell>
-              <TableCell>{vm.localIp}</TableCell>
+              <TableCell>
+                {decideIp(
+                  vm.hostname,
+                  vm.status,
+                  vm.localIp
+                )}
+              </TableCell>
               <TableCell>{vm.status}</TableCell>
               <TableCell>
                 {vm.status === 'running' ? (
@@ -72,6 +93,10 @@ function Dashboard() {
               </TableCell>
               <TableCell>
                 <DeleteVM vboxId={vm.vboxID} />
+                <ControlVm
+                  vmId={vm.id}
+                  action={decideAction(vm.status)}
+                />
               </TableCell>
             </TableRow>
           ))}

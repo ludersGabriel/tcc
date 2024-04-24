@@ -172,9 +172,11 @@ export async function deleteVmService(
   vmId: string,
   ownerId: number
 ): Promise<VM> {
+  const ret = await deleteVm(vmId, ownerId)
+
   await execAsync(`bash src/scripts/delete.sh ${vmId}`)
 
-  return await deleteVm(vmId, ownerId)
+  return ret
 }
 
 export async function uploadFilesService(
@@ -225,4 +227,12 @@ export async function getVmStatus(vmId: string) {
   )
 
   return stdout
+}
+
+export async function turnVmOn(vmId: string) {
+  await execAsync(`bash src/scripts/turnon.sh ${vmId}`)
+}
+
+export async function turnVmOff(vmId: string) {
+  await execAsync(`bash src/scripts/turnoff.sh ${vmId}`)
 }

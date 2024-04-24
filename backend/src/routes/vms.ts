@@ -5,7 +5,10 @@ import {
   deleteVmService,
   getVmIp,
   getVmStatus,
+  getVmsByIdService,
   getVmsForUser,
+  turnVmOff,
+  turnVmOn,
   uploadFilesService,
   validateCreation,
 } from '../services/vms'
@@ -95,6 +98,38 @@ router.post('/delete', async (req: CustomRequest, res) => {
 
     res.status(500).json({
       message: 'Error deleting VM',
+      status: 500,
+      success: false,
+    })
+  }
+})
+
+router.post('/control', async (req: CustomRequest, res) => {
+  try {
+    const user = req.user!
+    const { vmId, action } = req.body
+
+    const vm = await getVmsByIdService(
+      parseInt(vmId),
+      user.id
+    )
+
+    if (action === 'start') {
+      await turnVmOn(vm.vboxID)
+    } else if (action === 'stop') {
+      await turnVmOff(vm.vboxID)
+    }
+
+    res.status(200).json({
+      status: 200,
+      success: true,
+      message: 'VM control complete!',
+    })
+  } catch (e) {
+    console.log(e)
+
+    res.status(500).json({
+      message: 'Error controlling VM',
       status: 500,
       success: false,
     })

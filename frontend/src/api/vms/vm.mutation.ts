@@ -70,3 +70,31 @@ export function useUploadFiles(vboxId: number) {
     },
   })
 }
+
+export function useControlVm() {
+  const auth = useAuth()
+  const client = useQueryClient()
+
+  return useMutation({
+    mutationKey: ['controlVm'],
+    mutationFn: async (data: {
+      vmId: number
+      action: 'start' | 'stop'
+    }) => {
+      const resp = await fetch(`${baseUrl}/vms/control`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${auth.token}`,
+        },
+        body: JSON.stringify(data),
+      })
+
+      client.invalidateQueries({
+        queryKey: ['vms', auth.token],
+      })
+
+      return resp.json()
+    },
+  })
+}
