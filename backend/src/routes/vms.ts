@@ -3,8 +3,11 @@ import { CustomRequest, auth } from '../middleware/auth'
 import {
   createVmService,
   deleteVmService,
+  getVmIp,
+  getVmStatus,
   getVmsForUser,
   uploadFilesService,
+  validateCreation,
 } from '../services/vms'
 import multer from 'multer'
 
@@ -25,12 +28,14 @@ router.get('/', async (req: CustomRequest, res) => {
   try {
     const user = req.user!
 
-    const vms = (await getVmsForUser(user.id)).map(
-      (vm) => ({
-        ...vm,
-        status: 'on',
-      })
-    )
+    const userVms = await getVmsForUser(user.id)
+
+    const vms = []
+    for await (const vm of userVms) {
+      const ip = await getVmIp(vm.vboxID)
+      const status = await getVmStatus(vm.vboxID)
+      vms.push({ ...vm, localIp: ip, status })
+    }
 
     res.status(200).json({
       vms,
@@ -48,10 +53,12 @@ router.get('/', async (req: CustomRequest, res) => {
   }
 })
 
-router.post('/create', (req: CustomRequest, res) => {
+router.post('/create', async (req: CustomRequest, res) => {
   try {
     const user = req.user!
     const { name, description } = req.body
+
+    await validateCreation()
 
     createVmService(name, description, user.id)
 
@@ -64,7 +71,7 @@ router.post('/create', (req: CustomRequest, res) => {
   } catch (e) {
     console.log(e)
     res.status(500).json({
-      message: 'Error creating VM',
+      message: (e as any)?.message ?? 'Error creating VM',
       status: 500,
       success: false,
     })

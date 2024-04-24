@@ -31,6 +31,8 @@ export const Route = createFileRoute('/dashboard/')({
 function Dashboard() {
   const { vms } = useVms()
 
+  console.log({ vms })
+
   return (
     <>
       <Table>
@@ -41,6 +43,7 @@ function Dashboard() {
           <TableRow>
             <TableHead>Name</TableHead>
             <TableHead>Description</TableHead>
+            <TableHead>Local Ip</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Link</TableHead>
             <TableHead>Actions</TableHead>
@@ -51,16 +54,21 @@ function Dashboard() {
             <TableRow key={vm.id}>
               <TableCell>{vm.name}</TableCell>
               <TableCell>{vm.description}</TableCell>
+              <TableCell>{vm.localIp}</TableCell>
               <TableCell>{vm.status}</TableCell>
               <TableCell>
-                <Link
-                  to={'/dashboard/vm'}
-                  search={{
-                    vmId: vm.id,
-                  }}
-                >
-                  access
-                </Link>
+                {vm.status === 'running' ? (
+                  <Link
+                    to={'/dashboard/vm'}
+                    search={{
+                      vmId: vm.id,
+                    }}
+                  >
+                    access
+                  </Link>
+                ) : (
+                  <span>offline</span>
+                )}
               </TableCell>
               <TableCell>
                 <DeleteVM vboxId={vm.vboxID} />

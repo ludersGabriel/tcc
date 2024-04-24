@@ -10,6 +10,11 @@ import net, { AddressInfo } from 'net'
 import sysPath from 'path'
 import { exec } from 'child_process'
 import { promisify } from 'util'
+import {
+  createRequestService,
+  findPendingRequestsService,
+  updateRequestService,
+} from './requests'
 const execAsync = promisify(exec)
 
 export async function getVmsByIdService(
@@ -56,43 +61,111 @@ async function findFreePort(): Promise<number> {
   })
 }
 
+export async function validateCreation() {
+  const pendingCreation =
+    await findPendingRequestsService('create_vm')
+
+  if (pendingCreation.length > 1) {
+    throw new Error(
+      'Too many VMs being created. Try again later'
+    )
+  }
+
+  const { stdout } = await execAsync(
+    `bash src/scripts/createdVms.sh`
+  )
+
+  const registeredVms = parseInt(
+    stdout
+      .split('\n')
+      .find((line) => line.startsWith('Total:'))
+      ?.split(': ')[1] ?? '0'
+  )
+
+  if (
+    registeredVms === undefined ||
+    registeredVms === null ||
+    isNaN(registeredVms)
+  ) {
+    throw new Error('Error getting registered VMs')
+  }
+
+  const totalVms = registeredVms + pendingCreation.length
+
+  const totalMemory = os.totalmem() / 1024 ** 3
+
+  // TODO: grab percentage from config
+  if (totalVms * 4 > totalMemory / 2) {
+    throw new Error('Not enough memory to create VM')
+  }
+}
+
 export async function createVmService(
   name: string,
   description: string,
   ownerId: number
-): Promise<VM> {
-  const ovaPath = '~/ovas/gregio.ova'
-  const rdpPort = await findFreePort()
-  const { stdout } = await execAsync(
-    `bash src/scripts/create.sh ${ovaPath} ${rdpPort}`
-  )
+): Promise<VM | undefined> {
+  const req = await createRequestService({
+    userId: ownerId,
+    status: 'pending',
+    requestType: 'create_vm',
+  })
 
-  const lines = stdout.split('\n')
-  const vmNameLine = lines.find((line) =>
-    line.startsWith('VM Name:')
-  )
-  const vmIdLine = lines.find((line) =>
-    line.startsWith('VM ID:')
-  )
+  try {
+    const ovaPath = '~/ovas/gregio.ova'
+    const rdpPort = await findFreePort()
 
-  if (!vmNameLine || !vmIdLine) {
-    throw new Error(
-      'VM Name or ID not found in script output.'
+    const { stdout, stderr } = await execAsync(
+      `bash src/scripts/create.sh ${ovaPath} ${rdpPort}`
     )
+
+    const lines = stdout.split('\n')
+    const vmNameLine = lines.find((line) =>
+      line.startsWith('VM Name:')
+    )
+    const vmIdLine = lines.find((line) =>
+      line.startsWith('VM ID:')
+    )
+
+    if (!vmNameLine || !vmIdLine) {
+      throw new Error(
+        'VM Name or ID not found in script output.'
+      )
+    }
+
+    const vmName = vmNameLine.split(': ')[1]
+    const vmId = vmIdLine.split(': ')[1]
+
+    if (!vmName || !vmId) {
+      throw new Error(
+        'VM Name or ID not found in script output.' +
+          '\n' +
+          stderr
+      )
+    }
+
+    const ret = await createVm(
+      name,
+      description,
+      ownerId,
+      getIPv4(),
+      rdpPort,
+      vmName,
+      vmId
+    )
+
+    await updateRequestService(req.id, {
+      status: 'done',
+    })
+
+    return ret
+  } catch (e) {
+    console.log(e)
+    await updateRequestService(req.id, {
+      status: 'failed',
+      message: (e as any) ?? 'Unknown error',
+    })
   }
-
-  const vmName = vmNameLine.split(': ')[1]
-  const vmId = vmIdLine.split(': ')[1]
-
-  return await createVm(
-    name,
-    description,
-    ownerId,
-    getIPv4(),
-    rdpPort,
-    vmName,
-    vmId
-  )
 }
 
 export async function deleteVmService(
@@ -129,7 +202,27 @@ export async function uploadFilesService(
 
   const { stderr, stdout } = await execAsync(command)
 
+  for (let path of paths) {
+    await execAsync(`rm -f ${path}`)
+  }
+
   if (stderr) {
     throw new Error('Error uploading files')
   }
+}
+
+export async function getVmIp(vmId: string) {
+  const { stdout } = await execAsync(
+    `bash src/scripts/getIp.sh ${vmId}`
+  )
+
+  return stdout
+}
+
+export async function getVmStatus(vmId: string) {
+  const { stdout } = await execAsync(
+    `bash src/scripts/vmStatus.sh ${vmId}`
+  )
+
+  return stdout
 }

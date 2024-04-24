@@ -21,6 +21,7 @@ type VM = {
   'server-layout': string
   status: string
   vboxID: string
+  localIp: string
 }
 
 export function useVms() {

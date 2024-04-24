@@ -39,7 +39,7 @@ export function useUser(token: string) {
   return {
     isPending: query.isPending,
     isFetching: query.isFetching,
-    user: query.data as User | null,
+    user: query.data?.user as User | null,
     error: query.error,
   }
 }

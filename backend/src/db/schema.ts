@@ -30,6 +30,7 @@ export const userRelations = relations(
   users,
   ({ many }) => ({
     vms: many(vms),
+    requests: many(requests),
   })
 )
 
@@ -69,3 +70,44 @@ export const vmRelations = relations(vms, ({ one }) => ({
     references: [users.id],
   }),
 }))
+
+export const statusEnum = pgEnum('status', [
+  'pending',
+  'done',
+  'failed',
+])
+
+export const requestType = pgEnum('request_type', [
+  'create_vm',
+  'delete_vm',
+])
+
+export const requests = pgTable('requests', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id')
+    .notNull()
+    .references(() => users.id),
+  status: statusEnum('status').notNull().default('pending'),
+  requestType: requestType('request_type')
+    .notNull()
+    .default('create_vm'),
+  message: text('message'),
+})
+
+export type RequestTracker = typeof requests.$inferSelect
+export type RequestTrackerInput =
+  typeof requests.$inferInsert
+
+export type StatusEnum = typeof statusEnum
+
+export type RequestTypeEnum = typeof requestType
+
+export const requestRelations = relations(
+  requests,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [requests.userId],
+      references: [users.id],
+    }),
+  })
+)

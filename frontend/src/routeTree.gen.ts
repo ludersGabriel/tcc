@@ -14,6 +14,7 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as IndexImport } from './routes/index'
 import { Route as DashboardIndexImport } from './routes/dashboard/index'
 import { Route as DashboardVmImport } from './routes/dashboard/vm'
+import { Route as DashboardAdminImport } from './routes/dashboard/admin'
 
 // Create/Update Routes
 
@@ -32,12 +33,21 @@ const DashboardVmRoute = DashboardVmImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const DashboardAdminRoute = DashboardAdminImport.update({
+  path: '/dashboard/admin',
+  getParentRoute: () => rootRoute,
+} as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
     '/': {
       preLoaderRoute: typeof IndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/dashboard/admin': {
+      preLoaderRoute: typeof DashboardAdminImport
       parentRoute: typeof rootRoute
     }
     '/dashboard/vm': {
@@ -55,6 +65,7 @@ declare module '@tanstack/react-router' {
 
 export const routeTree = rootRoute.addChildren([
   IndexRoute,
+  DashboardAdminRoute,
   DashboardVmRoute,
   DashboardIndexRoute,
 ])

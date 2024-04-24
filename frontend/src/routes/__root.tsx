@@ -20,12 +20,16 @@ export const Route =
 function RootComponent() {
   const auth = useAuth()
   const navigate = useNavigate()
+
   return (
     <main className='w-full h-full bg-black text-white p-0 m-0'>
       {auth.isAuthenticated ? (
         <>
           <main className='p-3 flex gap-2 text-lg justify-between items-center'>
             <Link to={'/dashboard'}>Dashboard</Link>
+            {auth.user?.role === 'admin' && (
+              <Link to='/dashboard/admin'>Admin</Link>
+            )}
             <button
               onClick={() => {
                 auth.logout()
