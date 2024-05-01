@@ -32,7 +32,12 @@ export default function ControlVm({
             ? toast.success
             : toast.error
 
-          t(data.message)
+          const message = data.success
+            ? data.message +
+              'It may take a few seconds to reflect.'
+            : data.message
+
+          t(message)
         },
       }
     )

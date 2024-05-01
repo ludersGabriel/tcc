@@ -14,6 +14,7 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as IndexImport } from './routes/index'
 import { Route as DashboardIndexImport } from './routes/dashboard/index'
 import { Route as DashboardVmImport } from './routes/dashboard/vm'
+import { Route as DashboardRequestsImport } from './routes/dashboard/requests'
 import { Route as DashboardAdminImport } from './routes/dashboard/admin'
 
 // Create/Update Routes
@@ -30,6 +31,11 @@ const DashboardIndexRoute = DashboardIndexImport.update({
 
 const DashboardVmRoute = DashboardVmImport.update({
   path: '/dashboard/vm',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const DashboardRequestsRoute = DashboardRequestsImport.update({
+  path: '/dashboard/requests',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -50,6 +56,10 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAdminImport
       parentRoute: typeof rootRoute
     }
+    '/dashboard/requests': {
+      preLoaderRoute: typeof DashboardRequestsImport
+      parentRoute: typeof rootRoute
+    }
     '/dashboard/vm': {
       preLoaderRoute: typeof DashboardVmImport
       parentRoute: typeof rootRoute
@@ -66,6 +76,7 @@ declare module '@tanstack/react-router' {
 export const routeTree = rootRoute.addChildren([
   IndexRoute,
   DashboardAdminRoute,
+  DashboardRequestsRoute,
   DashboardVmRoute,
   DashboardIndexRoute,
 ])

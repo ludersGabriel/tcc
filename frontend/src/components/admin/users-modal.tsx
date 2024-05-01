@@ -15,16 +15,11 @@ import { Button } from '@/components/ui/button'
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { useState } from 'react'
-import { useCreateVm } from '@/api/vms/vm.mutation'
-import toast from 'react-hot-toast'
 
 import {
   Select,
@@ -33,36 +28,41 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { useOvas } from '@/api/ovas/ovas.query'
 
-const createVmSchema = z.object({
-  name: z.string().min(3, 'Name is too short'),
-  description: z
+import { Input } from '@/components/ui/input'
+import { useState } from 'react'
+import { useUserUpsert } from '@/api/user/user.mutation'
+import toast from 'react-hot-toast'
+
+const upsertUserSchema = z.object({
+  username: z.string().min(3, 'Username is too short'),
+  role: z.enum(['admin', 'user']),
+  id: z.coerce.number().optional(),
+  password: z
     .string()
-    .min(3, 'Description is too short'),
-  ova: z.string(),
-  username: z.string(),
+    .min(8, 'Password is too short. Min 8 chars'),
 })
 
-export type CreateVmForm = z.infer<typeof createVmSchema>
+export type UpsertUserForm = z.infer<
+  typeof upsertUserSchema
+>
 
-export default function CreateVM() {
+export default function UpsertUser() {
   const [open, setOpen] = useState<boolean>(false)
-  const createVm = useCreateVm()
-  const { ovas } = useOvas()
+  const upsertUser = useUserUpsert()
 
-  const form = useForm<CreateVmForm>({
-    resolver: zodResolver(createVmSchema),
+  const form = useForm<UpsertUserForm>({
+    resolver: zodResolver(upsertUserSchema),
     defaultValues: {
-      name: '',
-      description: '',
-      ova: '',
+      // id: undefined,
+      password: '',
       username: '',
+      role: 'user',
     },
   })
 
-  function onSubmit(data: CreateVmForm) {
-    createVm.mutate(data, {
+  function onSubmit(data: UpsertUserForm) {
+    upsertUser.mutate(data, {
       onSuccess: (data) => {
         const t = data.success ? toast.success : toast.error
 
@@ -87,14 +87,14 @@ export default function CreateVM() {
     <Dialog open={open} onOpenChange={handleOpen}>
       <DialogTrigger asChild>
         <div className='flex justify-center align-middle p-5'>
-          <Button>Create VM</Button>
+          <Button onClick={handleOpen}>Add User</Button>
         </div>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create VM</DialogTitle>
+          <DialogTitle>Create User</DialogTitle>
           <DialogDescription>
-            Create a new virtual machine.
+            Fill out the form below to create a new user
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -102,36 +102,6 @@ export default function CreateVM() {
             onSubmit={form.handleSubmit(onSubmit)}
             className='space-y-8'
           >
-            <FormField
-              control={form.control}
-              name='name'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder='name' {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='description'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder='description'
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
             <FormField
               control={form.control}
               name='username'
@@ -144,9 +114,6 @@ export default function CreateVM() {
                       {...field}
                     />
                   </FormControl>
-                  <FormDescription>
-                    username used in the ova
-                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -154,39 +121,56 @@ export default function CreateVM() {
 
             <FormField
               control={form.control}
-              name='ova'
+              name='password'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Ova</FormLabel>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder='password'
+                      type='password'
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name='role'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Role</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder='Select an ova' />
+                        <SelectValue placeholder='Select a role' />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {ovas.map((ova) => (
-                        <SelectItem key={ova} value={ova}>
-                          {ova}
-                        </SelectItem>
-                      ))}
+                      <SelectItem value='admin'>
+                        Admin
+                      </SelectItem>
+                      <SelectItem value='user'>
+                        User
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
                 </FormItem>
               )}
             />
-
             <Button type='submit' className='mr-2'>
-              Submit
+              Create
             </Button>
-
             <DialogClose asChild onClick={resetForm}>
               <Button type='button' variant='secondary'>
-                Close
+                Cancel
               </Button>
             </DialogClose>
           </form>

@@ -1,5 +1,5 @@
-#!/bin/bash
 
+#!/bin/bash
 # Check if the number of arguments is correct
 if [ "$#" -ne 2 ]; then
     echo "Usage: $0 <OVA_PATH> <RDP_PORT>"
@@ -17,7 +17,7 @@ MEMORY_SIZE=4096
 # Import OVA
 VBoxManage import "$OVA_PATH" --vsys 0 --vmname "$VM_NAME"
 
-# Set Display parameters
+# Set vrdp parameters
 VBoxManage modifyvm "$VM_NAME" --vrde on
 VBoxManage modifyvm "$VM_NAME" --vrdeport "$RDP_PORT"
 VBoxManage modifyvm "$VM_NAME" --vrdeauthtype null
@@ -33,6 +33,9 @@ VBoxManage modifyvm "$VM_NAME" --nicpromisc1 allow-all
 
 # Set Memory parameters
 VBoxManage modifyvm "$VM_NAME" --memory "$MEMORY_SIZE"
+
+# set cpu parameters
+VBoxManage modifyvm "$VM_NAME" --cpus 4
 
 # Start the VM
 VBoxManage startvm "$VM_NAME" --type headless

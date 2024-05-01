@@ -1,3 +1,5 @@
+import Configs from '@/components/admin/configs'
+import Users from '@/components/admin/users'
 import {
   createFileRoute,
   redirect,
@@ -17,8 +19,13 @@ export const Route = createFileRoute('/dashboard/admin')({
 
 function AdminDashboard() {
   return (
-    <div>
-      <h1>Admin Dashboard</h1>
+    <div className='p-5 flex space-x-4'>
+      <div className='flex-1 rounded-lg max-w-1/2'>
+        <Configs />
+      </div>
+      <div className='flex-1 rounded-lg max-w-1/2 H'>
+        <Users />
+      </div>
     </div>
   )
 }

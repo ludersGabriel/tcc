@@ -49,7 +49,7 @@ function Dashboard() {
   }
 
   return (
-    <>
+    <div className='p-5'>
       <Table>
         <TableCaption>
           A list of your registered vms.
@@ -103,6 +103,6 @@ function Dashboard() {
         </TableBody>
       </Table>
       <CreateVM />
-    </>
+    </div>
   )
 }

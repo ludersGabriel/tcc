@@ -5,6 +5,7 @@ import {
 import {
   createRequest,
   findPendingRequests,
+  getRequestsByUserId,
   updateRequest,
 } from '../repositories/requests'
 
@@ -25,4 +26,10 @@ export async function findPendingRequestsService(
   type: RequestTracker['requestType']
 ): Promise<RequestTracker[]> {
   return await findPendingRequests(type)
+}
+
+export async function getRequestsByUserIdService(
+  userId: number
+): Promise<RequestTracker[]> {
+  return await getRequestsByUserId(userId)
 }

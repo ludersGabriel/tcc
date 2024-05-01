@@ -1,6 +1,6 @@
 import { and, eq, getTableColumns } from 'drizzle-orm'
 import db from '../db/db'
-import { User, users } from '../db/schema'
+import { User, UserInput, users } from '../db/schema'
 
 export async function getUserByUsername(
   username: string
@@ -27,4 +27,42 @@ export async function getUserById(
   })
 
   return ret
+}
+
+export async function getUsers(): Promise<UserDto[]> {
+  const { password, ...other } = getTableColumns(users)
+
+  return await db.query.users.findMany({
+    columns: {
+      password: false,
+    },
+  })
+}
+
+export async function createUser(
+  data: UserInput
+): Promise<UserDto> {
+  const [ret] = await db
+    .insert(users)
+    .values(data)
+    .returning()
+
+  const { password, ...other } = ret
+
+  return other
+}
+
+export async function updateUser(
+  userId: number,
+  data: Partial<UserInput>
+): Promise<UserDto> {
+  const [ret] = await db
+    .update(users)
+    .set(data)
+    .where(eq(users.id, userId))
+    .returning()
+
+  const { password, ...other } = ret
+
+  return other
 }

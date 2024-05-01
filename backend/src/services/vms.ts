@@ -15,6 +15,7 @@ import {
   findPendingRequestsService,
   updateRequestService,
 } from './requests'
+import { getConfigByKeyService } from './configs'
 const execAsync = promisify(exec)
 
 export async function getVmsByIdService(
@@ -65,7 +66,15 @@ export async function validateCreation() {
   const pendingCreation =
     await findPendingRequestsService('create_vm')
 
-  if (pendingCreation.length > 1) {
+  const configs = await getConfigByKeyService('main')
+
+  if (!configs) {
+    throw new Error('Main config not found')
+  }
+
+  if (
+    pendingCreation.length >= configs.concurrentCreation
+  ) {
     throw new Error(
       'Too many VMs being created. Try again later'
     )
@@ -94,15 +103,21 @@ export async function validateCreation() {
 
   const totalMemory = os.totalmem() / 1024 ** 3
 
-  // TODO: grab percentage from config
-  if (totalVms * 4 > totalMemory / 2) {
-    throw new Error('Not enough memory to create VM')
+  if (
+    totalVms * 4 >
+    totalMemory * (configs.totalMem / 100)
+  ) {
+    throw new Error(
+      `Not enough memory to create VM. Total memory: ${(totalMemory * (configs.totalMem / 100)).toFixed(2)}GB, used or to be used memory: ${(totalVms * 4).toFixed(2)}GB`
+    )
   }
 }
 
 export async function createVmService(
   name: string,
   description: string,
+  ova: string,
+  username: string,
   ownerId: number
 ): Promise<VM | undefined> {
   const req = await createRequestService({
@@ -112,7 +127,8 @@ export async function createVmService(
   })
 
   try {
-    const ovaPath = '~/ovas/gregio.ova'
+    const ovaPath = 'src/ovas/' + ova
+
     const rdpPort = await findFreePort()
 
     const { stdout, stderr } = await execAsync(
@@ -151,7 +167,8 @@ export async function createVmService(
       getIPv4(),
       rdpPort,
       vmName,
-      vmId
+      vmId,
+      username
     )
 
     await updateRequestService(req.id, {
@@ -199,8 +216,7 @@ export async function uploadFilesService(
     pathsArg += `${absolute} `
   }
 
-  const command = `bash src/scripts/upload.sh ${vboxID} jurgens ${pathsArg}`
-  console.log({ command })
+  const command = `bash src/scripts/upload.sh ${vboxID} ${vm.username} ${pathsArg}`
 
   const { stderr, stdout } = await execAsync(command)
 
@@ -209,8 +225,30 @@ export async function uploadFilesService(
   }
 
   if (stderr) {
+    console.log(stdout)
+    console.log(stderr)
     throw new Error('Error uploading files')
   }
+}
+
+export async function downloadFilesService(
+  vmId: number,
+  ownerId: number
+): Promise<string> {
+  const vm = await getVmsById(vmId, ownerId)
+
+  if (!vm) {
+    throw new Error('VM not found')
+  }
+
+  const command = `bash src/scripts/download.sh ${vm.vboxID} ${vm.username}`
+
+  const { stderr, stdout } = await execAsync(command)
+
+  console.log(stdout)
+  console.log(stderr)
+
+  return `src/outputs/${vm.vboxID}-output`
 }
 
 export async function getVmIp(vmId: string) {

@@ -24,7 +24,8 @@ export const users = pgTable(
   })
 )
 
-export type User = InferSelectModel<typeof users>
+export type User = typeof users.$inferSelect
+export type UserInput = typeof users.$inferInsert
 
 export const userRelations = relations(
   users,
@@ -37,6 +38,7 @@ export const userRelations = relations(
 export const vms = pgTable('vms', {
   id: serial('id').primaryKey(),
   name: text('name').notNull(),
+  username: text('username').notNull(),
   description: text('description'),
   ownerId: integer('owner_id')
     .notNull()
@@ -111,3 +113,17 @@ export const requestRelations = relations(
     }),
   })
 )
+
+export const configs = pgTable('configs', {
+  id: serial('id').primaryKey(),
+  key: text('key').notNull().unique().default('main'),
+  // from 0 to 100%
+  totalMem: integer('total_mem').notNull().default(50),
+  concurrentCreation: integer('concurrent_creation')
+    .notNull()
+    .default(2),
+})
+
+export type Config = typeof configs.$inferSelect
+
+export type ConfigInput = typeof configs.$inferInsert

@@ -20,23 +20,6 @@ function getIPv4() {
   return ''
 }
 
-async function findFreePort() {
-  return new Promise((resolve, reject) => {
-    const server = net.createServer()
-    server.unref()
-    server.on('error', (error) => {
-      reject(error)
-    })
-
-    server.listen(0, () => {
-      const { port } = server.address() as AddressInfo
-      server.close(() => {
-        resolve(port)
-      })
-    })
-  })
-}
-
 const seedClient = postgres(
   drizzleConfig.dbCredentials.connectionString
 )
@@ -48,6 +31,10 @@ async function main() {
     username: 'admin',
     password: await myHash('admin'),
     role: 'admin',
+  })
+
+  await db.insert(schema.configs).values({
+    id: 1,
   })
 
   // await db.insert(schema.vms).values({

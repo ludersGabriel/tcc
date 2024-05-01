@@ -40,3 +40,11 @@ export async function findPendingRequests(
     ),
   })
 }
+
+export async function getRequestsByUserId(
+  userId: number
+): Promise<RequestTracker[]> {
+  return await db.query.requests.findMany({
+    where: eq(requests.userId, userId),
+  })
+}

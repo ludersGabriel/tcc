@@ -3,6 +3,7 @@ import { CustomRequest, auth } from '../middleware/auth'
 import {
   createVmService,
   deleteVmService,
+  downloadFilesService,
   getVmIp,
   getVmStatus,
   getVmsByIdService,
@@ -12,7 +13,17 @@ import {
   uploadFilesService,
   validateCreation,
 } from '../services/vms'
+import fs from 'fs'
 import multer from 'multer'
+import archiver from 'archiver'
+import { getRequestsByUserId } from '../repositories/requests'
+
+const generateUploadsDir = () => {
+  fs.existsSync('uploads/') ||
+    fs.mkdirSync('uploads/', { recursive: true })
+}
+
+generateUploadsDir()
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -59,11 +70,17 @@ router.get('/', async (req: CustomRequest, res) => {
 router.post('/create', async (req: CustomRequest, res) => {
   try {
     const user = req.user!
-    const { name, description } = req.body
+    const { name, description, ova, username } = req.body
 
     await validateCreation()
 
-    createVmService(name, description, user.id)
+    createVmService(
+      name,
+      description,
+      ova,
+      username,
+      user.id
+    )
 
     res.status(200).json({
       status: 200,
@@ -176,5 +193,78 @@ router.post(
     }
   }
 )
+
+router.get('/download', async (req: CustomRequest, res) => {
+  try {
+    const user = req.user!
+    const { vmId } = req.query
+
+    if (!vmId) {
+      res.status(400).json({
+        message: 'VM ID not provided',
+        status: 400,
+        success: false,
+      })
+      return
+    }
+
+    const outputDir = await downloadFilesService(
+      +vmId,
+      user.id
+    )
+
+    res.writeHead(200, {
+      'Content-Type': 'application/zip',
+      'Content-disposition': `attachment; filename=${vmId}-files.zip`,
+    })
+
+    const archive = archiver('zip', {
+      zlib: { level: 9 },
+    })
+
+    archive.on('error', function (err) {
+      throw err
+    })
+
+    archive.pipe(res)
+
+    archive.directory(outputDir, false)
+
+    archive.finalize()
+
+    res.on('finish', () => {
+      fs.rmdirSync(outputDir, { recursive: true })
+    })
+  } catch (e) {
+    console.log(e)
+    res.status(500).json({
+      message:
+        'Error downloading files. Make sure they are in the output folder in the desktop of the VM',
+      status: 500,
+      success: false,
+    })
+  }
+})
+
+router.get('/requests', async (req: CustomRequest, res) => {
+  try {
+    const user = req.user!
+    const requests = await getRequestsByUserId(user.id)
+
+    res.status(200).json({
+      requests,
+      status: 200,
+      success: true,
+      message: 'Requests retrieved',
+    })
+  } catch (e) {
+    console.log(e)
+    res.status(500).json({
+      message: 'Error retrieving requests',
+      status: 500,
+      success: false,
+    })
+  }
+})
 
 export default router

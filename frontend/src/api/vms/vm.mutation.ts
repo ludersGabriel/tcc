@@ -98,3 +98,47 @@ export function useControlVm() {
     },
   })
 }
+
+export function useDownloadVm() {
+  const auth = useAuth()
+  useQueryClient()
+
+  return useMutation({
+    mutationKey: ['downloadVm', auth.token],
+    mutationFn: async (data: { vmId: number }) => {
+      const url = new URL(`${baseUrl}/vms/download`)
+      url.searchParams.append('vmId', data.vmId.toString())
+
+      const resp = await fetch(url.toString(), {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${auth.token}`,
+        },
+      })
+
+      if (!resp.ok) {
+        throw new Error('Network response was not ok')
+      }
+
+      const blob = await resp.blob()
+
+      const blobUrl = window.URL.createObjectURL(blob)
+
+      const link = document.createElement('a')
+      link.href = blobUrl
+      link.setAttribute(
+        'download',
+        `${data.vmId}-files.zip`
+      )
+
+      document.body.appendChild(link)
+      link.click()
+
+      link.parentNode!.removeChild(link)
+      window.URL.revokeObjectURL(blobUrl)
+
+      return resp
+    },
+  })
+}

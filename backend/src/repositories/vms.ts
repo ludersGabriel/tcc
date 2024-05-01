@@ -24,7 +24,8 @@ export async function createVm(
   hostname: string,
   port: number,
   vboxName: string,
-  vboxID: string
+  vboxID: string,
+  username: string
 ): Promise<VM> {
   const [ret] = await db
     .insert(vms)
@@ -36,6 +37,7 @@ export async function createVm(
       port,
       vboxName,
       vboxID,
+      username,
     })
     .returning()
 

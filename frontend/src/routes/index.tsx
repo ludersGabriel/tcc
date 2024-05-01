@@ -77,9 +77,8 @@ function Home() {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className='space-y-8'
+          className='space-y-8 p-5 w-96 rounded-lg shadow-lg'
         >
-          <img src='./bigbrother.jpg' />
           <FormField
             control={form.control}
             name='username'

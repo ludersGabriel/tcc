@@ -30,6 +30,7 @@ function RootComponent() {
             {auth.user?.role === 'admin' && (
               <Link to='/dashboard/admin'>Admin</Link>
             )}
+            <Link to={'/dashboard/requests'}>Requests</Link>
             <button
               onClick={() => {
                 auth.logout()

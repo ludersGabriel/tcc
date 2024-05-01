@@ -49,3 +49,36 @@ export function useVms() {
     error: query.error,
   }
 }
+
+export type Requests = {
+  id: number
+  userId: number
+  status: string
+  requestType: string
+  message: string
+}
+
+export function useRequests() {
+  useQueryClient()
+  const auth = useAuth()
+
+  const query = useQuery({
+    queryKey: ['requests', auth.token],
+    queryFn: () => {
+      return fetch(`${baseUrl}/vms/requests`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${auth.token}`,
+        },
+      }).then((res) => res.json())
+    },
+  })
+
+  return {
+    isPending: query.isPending,
+    isFetching: query.isFetching,
+    requests: (query.data?.requests ?? []) as Requests[],
+    error: query.error,
+  }
+}
