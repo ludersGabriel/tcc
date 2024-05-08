@@ -6,6 +6,6 @@ export default {
   driver: 'pg',
   dbCredentials: {
     connectionString:
-      'postgres://postgres:postgres@localhost:5432/db',
+      'postgres://postgres:postgres@localhost:5500/db',
   },
 } satisfies Config
