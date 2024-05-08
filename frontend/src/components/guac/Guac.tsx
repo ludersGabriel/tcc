@@ -2,6 +2,7 @@ import Guacamole from 'guacamole-common-js'
 import { useCallback, useEffect, useRef } from 'react'
 import { useGuacToken } from '../../api/guac-token/guacToken.query'
 import toast from 'react-hot-toast'
+import { baseUrl } from '@/api/config'
 
 type GuacProps = {
   vmId: number
@@ -50,9 +51,11 @@ export default function useGuac({ vmId }: GuacProps) {
   }, [guacDisconnect])
 
   useEffect(() => {
+    const tunnelUrl = baseUrl.replace('http', 'ws')
+
     if (!guacRef.current && !keyboardRef.current) {
       const tunnel = new Guacamole.WebSocketTunnel(
-        'ws://localhost:3000/'
+        tunnelUrl
       )
 
       const guac = new Guacamole.Client(tunnel)
