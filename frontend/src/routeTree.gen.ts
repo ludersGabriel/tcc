@@ -11,37 +11,43 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as AuthImport } from './routes/_auth'
 import { Route as IndexImport } from './routes/index'
-import { Route as DashboardIndexImport } from './routes/dashboard/index'
-import { Route as DashboardVmImport } from './routes/dashboard/vm'
-import { Route as DashboardRequestsImport } from './routes/dashboard/requests'
-import { Route as DashboardAdminImport } from './routes/dashboard/admin'
+import { Route as AuthVmImport } from './routes/_auth/vm'
+import { Route as AuthRequestsImport } from './routes/_auth/requests'
+import { Route as AuthDashboardImport } from './routes/_auth/dashboard'
+import { Route as AuthAdminImport } from './routes/_auth/admin'
 
 // Create/Update Routes
+
+const AuthRoute = AuthImport.update({
+  id: '/_auth',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const IndexRoute = IndexImport.update({
   path: '/',
   getParentRoute: () => rootRoute,
 } as any)
 
-const DashboardIndexRoute = DashboardIndexImport.update({
-  path: '/dashboard/',
-  getParentRoute: () => rootRoute,
+const AuthVmRoute = AuthVmImport.update({
+  path: '/vm',
+  getParentRoute: () => AuthRoute,
 } as any)
 
-const DashboardVmRoute = DashboardVmImport.update({
-  path: '/dashboard/vm',
-  getParentRoute: () => rootRoute,
+const AuthRequestsRoute = AuthRequestsImport.update({
+  path: '/requests',
+  getParentRoute: () => AuthRoute,
 } as any)
 
-const DashboardRequestsRoute = DashboardRequestsImport.update({
-  path: '/dashboard/requests',
-  getParentRoute: () => rootRoute,
+const AuthDashboardRoute = AuthDashboardImport.update({
+  path: '/dashboard',
+  getParentRoute: () => AuthRoute,
 } as any)
 
-const DashboardAdminRoute = DashboardAdminImport.update({
-  path: '/dashboard/admin',
-  getParentRoute: () => rootRoute,
+const AuthAdminRoute = AuthAdminImport.update({
+  path: '/admin',
+  getParentRoute: () => AuthRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -52,21 +58,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
-    '/dashboard/admin': {
-      preLoaderRoute: typeof DashboardAdminImport
+    '/_auth': {
+      preLoaderRoute: typeof AuthImport
       parentRoute: typeof rootRoute
     }
-    '/dashboard/requests': {
-      preLoaderRoute: typeof DashboardRequestsImport
-      parentRoute: typeof rootRoute
+    '/_auth/admin': {
+      preLoaderRoute: typeof AuthAdminImport
+      parentRoute: typeof AuthImport
     }
-    '/dashboard/vm': {
-      preLoaderRoute: typeof DashboardVmImport
-      parentRoute: typeof rootRoute
+    '/_auth/dashboard': {
+      preLoaderRoute: typeof AuthDashboardImport
+      parentRoute: typeof AuthImport
     }
-    '/dashboard/': {
-      preLoaderRoute: typeof DashboardIndexImport
-      parentRoute: typeof rootRoute
+    '/_auth/requests': {
+      preLoaderRoute: typeof AuthRequestsImport
+      parentRoute: typeof AuthImport
+    }
+    '/_auth/vm': {
+      preLoaderRoute: typeof AuthVmImport
+      parentRoute: typeof AuthImport
     }
   }
 }
@@ -75,10 +85,12 @@ declare module '@tanstack/react-router' {
 
 export const routeTree = rootRoute.addChildren([
   IndexRoute,
-  DashboardAdminRoute,
-  DashboardRequestsRoute,
-  DashboardVmRoute,
-  DashboardIndexRoute,
+  AuthRoute.addChildren([
+    AuthAdminRoute,
+    AuthDashboardRoute,
+    AuthRequestsRoute,
+    AuthVmRoute,
+  ]),
 ])
 
 /* prettier-ignore-end */

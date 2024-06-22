@@ -12,7 +12,7 @@ IMAGE_NAME=$(basename "$OVA_PATH" | cut -d. -f1)  # Extract the base name withou
 TIMESTAMP=$(date +"%Y%m%d%H%M%S")  # Current timestamp
 VM_NAME="${IMAGE_NAME}_${TIMESTAMP}"
 RDP_PORT=$2
-MEMORY_SIZE=4096
+MEMORY_SIZE=8192  # 8GB
 
 # Import OVA
 VBoxManage import "$OVA_PATH" --vsys 0 --vmname "$VM_NAME"

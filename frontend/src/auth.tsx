@@ -46,6 +46,7 @@ export function AuthProvider({
     })
     localStorage.removeItem('token')
     toast.success('Logged out')
+    window.location.reload()
   }, [])
 
   return (

@@ -8,7 +8,7 @@ import {
   RouterProvider,
   createRouter,
 } from '@tanstack/react-router'
-import { AuthProvider, useAuth } from './auth'
+import { AuthProvider } from './auth'
 
 import { Toaster } from 'react-hot-toast'
 
@@ -18,7 +18,7 @@ const router = createRouter({
   routeTree,
   defaultPreload: 'intent',
   context: {
-    auth: undefined!,
+    queryClient,
   },
 })
 
@@ -29,13 +29,7 @@ declare module '@tanstack/react-router' {
 }
 
 function InnerApp() {
-  const auth = useAuth()
-
-  if (auth.isLoading) return null
-
-  return (
-    <RouterProvider router={router} context={{ auth }} />
-  )
+  return <RouterProvider router={router} />
 }
 
 function App() {

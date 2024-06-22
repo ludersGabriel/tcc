@@ -14,18 +14,9 @@ import {
   TableRow,
 } from '@/components/ui/table'
 
-export const Route = createFileRoute('/dashboard/requests')(
-  {
-    beforeLoad: ({ context }) => {
-      if (!context.auth.isAuthenticated) {
-        throw redirect({
-          to: '/',
-        })
-      }
-    },
-    component: RequestsDash,
-  }
-)
+export const Route = createFileRoute('/_auth/requests')({
+  component: RequestsDash,
+})
 
 function RequestsDash() {
   const { requests } = useRequests()

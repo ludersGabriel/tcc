@@ -1,4 +1,5 @@
 import {
+  queryOptions,
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query'
@@ -68,4 +69,28 @@ export function useUsers() {
     users: (query.data?.users ?? []) as User[],
     error: query.error,
   }
+}
+
+export const userQueryOptions = queryOptions({
+  queryKey: ['user-query'],
+  queryFn: me,
+  staleTime: Infinity,
+})
+
+async function me() {
+  const token = localStorage.getItem('token')
+
+  if (!token) throw new Error('No token found')
+
+  const res = await fetch(`${baseUrl}/user`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  })
+
+  if (!res.ok) throw new Error('Failed to fetch user')
+
+  return await res.json()
 }

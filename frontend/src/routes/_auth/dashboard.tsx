@@ -1,8 +1,3 @@
-import {
-  Link,
-  createFileRoute,
-  redirect,
-} from '@tanstack/react-router'
 import { useVms } from '../../api/vms/vm.query'
 import CreateVM from '@/components/create-vm/createVM'
 
@@ -18,35 +13,33 @@ import {
 import DeleteVM from '@/components/delete-vm/deleteVM'
 import ControlVm from '@/components/control-vm/controlVm'
 
-export const Route = createFileRoute('/dashboard/')({
-  beforeLoad: ({ context }) => {
-    if (!context.auth.isAuthenticated) {
-      throw redirect({
-        to: '/',
-      })
-    }
-  },
+import {
+  createFileRoute,
+  Link,
+} from '@tanstack/react-router'
+
+export const Route = createFileRoute('/_auth/dashboard')({
   component: Dashboard,
 })
 
+function decideIp(
+  hostname: string,
+  status: string,
+  localIp: string
+) {
+  if (hostname === localIp || status !== 'running') {
+    return '-'
+  }
+
+  return localIp
+}
+
+function decideAction(status: string) {
+  return status === 'running' ? 'stop' : 'start'
+}
+
 function Dashboard() {
   const { vms } = useVms()
-
-  function decideAction(status: string) {
-    return status === 'running' ? 'stop' : 'start'
-  }
-
-  function decideIp(
-    hostname: string,
-    status: string,
-    localIp: string
-  ) {
-    if (hostname === localIp || status !== 'running') {
-      return '-'
-    }
-
-    return localIp
-  }
 
   return (
     <div className='p-5'>
@@ -80,7 +73,7 @@ function Dashboard() {
               <TableCell>
                 {vm.status === 'running' ? (
                   <Link
-                    to={'/dashboard/vm'}
+                    to={'/vm'}
                     search={{
                       vmId: vm.id,
                     }}

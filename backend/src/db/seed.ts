@@ -6,23 +6,7 @@ import { myHash } from '../middleware/auth'
 import os from 'os'
 import net, { AddressInfo } from 'net'
 
-function getIPv4() {
-  const interfaces = os.networkInterfaces()
-
-  for (let iface of Object.values(interfaces)) {
-    if (!iface) continue
-    for (let alias of iface) {
-      if (alias.family === 'IPv4' && !alias.internal)
-        return alias.address
-    }
-  }
-
-  return ''
-}
-
-const seedClient = postgres(
-  drizzleConfig.dbCredentials.connectionString
-)
+const seedClient = postgres(drizzleConfig.dbCredentials.url)
 
 async function main() {
   const db = drizzle(seedClient, { schema })

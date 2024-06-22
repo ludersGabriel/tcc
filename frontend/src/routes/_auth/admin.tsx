@@ -5,9 +5,9 @@ import {
   redirect,
 } from '@tanstack/react-router'
 
-export const Route = createFileRoute('/dashboard/admin')({
+export const Route = createFileRoute('/_auth/admin')({
   beforeLoad: ({ context }) => {
-    if (context.auth.user?.role !== 'admin') {
+    if (context.user?.role !== 'admin') {
       throw redirect({
         to: '/dashboard',
       })

@@ -1,19 +1,18 @@
 import Guacamole from 'guacamole-common-js'
 import { useCallback, useEffect, useRef } from 'react'
-import { useGuacToken } from '../../api/guac-token/guacToken.query'
+
 import toast from 'react-hot-toast'
 import { baseUrl } from '@/api/config'
 
 type GuacProps = {
-  vmId: number
+  token: string
 }
 
-export default function useGuac({ vmId }: GuacProps) {
+export default function useGuac({ token }: GuacProps) {
   const guacRef = useRef<Guacamole.Client | null>(null)
   const keyboardRef = useRef<Guacamole.Keyboard | null>(
     null
   )
-  const { token } = useGuacToken({ vmId })
 
   const guacDisconnect = useCallback(() => {
     if (keyboardRef.current) {
@@ -33,22 +32,9 @@ export default function useGuac({ vmId }: GuacProps) {
     }
 
     guacRef.current?.disconnect()
+    guacRef.current = null
+    keyboardRef.current = null
   }, [])
-
-  useEffect(() => {
-    const handleUnload = () => {
-      guacDisconnect()
-    }
-
-    window.addEventListener('beforeunload', handleUnload)
-
-    return () => {
-      window.removeEventListener(
-        'beforeunload',
-        handleUnload
-      )
-    }
-  }, [guacDisconnect])
 
   useEffect(() => {
     const tunnelUrl = baseUrl.replace('http', 'ws')
@@ -121,5 +107,5 @@ export default function useGuac({ vmId }: GuacProps) {
     return () => {
       guacDisconnect()
     }
-  }, [guacDisconnect, token])
+  }, [])
 }

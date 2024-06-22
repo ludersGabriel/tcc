@@ -22,16 +22,25 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import toast from 'react-hot-toast'
+import { userQueryOptions } from '@/api/user/user.query'
 
 export const Route = createFileRoute('/')({
-  beforeLoad: ({ context }) => {
-    if (context.auth.isAuthenticated) {
-      throw redirect({
-        to: '/dashboard',
-      })
+  component: Home,
+  beforeLoad: async ({ context }) => {
+    const client = context.queryClient
+
+    try {
+      const data = await client.fetchQuery(userQueryOptions)
+
+      if (data?.user) {
+        redirect({
+          to: '/dashboard',
+        })
+      }
+    } catch (e) {
+      return
     }
   },
-  component: Home,
 })
 
 const createLoginSchema = z.object({

