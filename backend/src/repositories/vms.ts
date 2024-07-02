@@ -1,6 +1,7 @@
 import { and, eq } from 'drizzle-orm'
 import db from '../db/db'
 import { VM, vms } from '../db/schema'
+import { getIPv4 } from '../services/vms'
 
 export async function getVmsForUser(userId: number) {
   return await db.query.vms.findMany({
@@ -12,9 +13,15 @@ export async function getVmsById(
   vmId: number,
   ownerId: number
 ) {
-  return await db.query.vms.findFirst({
+  const ret = await db.query.vms.findFirst({
     where: and(eq(vms.id, vmId), eq(vms.ownerId, ownerId)),
   })
+
+  if (!ret) return ret
+
+  ret.hostname = getIPv4()
+
+  return ret
 }
 
 export async function createVm(

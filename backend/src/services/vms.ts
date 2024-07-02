@@ -31,7 +31,7 @@ export async function getVmsByIdService(
   return vm
 }
 
-function getIPv4() {
+export function getIPv4() {
   const interfaces = os.networkInterfaces()
 
   for (let iface of Object.values(interfaces)) {

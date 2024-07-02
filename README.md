@@ -155,7 +155,28 @@ Here you will find instructions on how to get a local version running on [Ubuntu
    ```sh
     cd backend
     docker compose up -d
-    docker ps # ve
+    docker ps # verify that the containers are up and running
+   ```
+
+2. Apply migrations and initial seeds for the database
+   ```sh
+    npm run drizzle:migrate
+    npm run drizzle:seed
+   ```
+4. Run the backend
+   ```sh
+    npm run dev &
+    cd ..
+   ```
+5. Run the frontend
+   ```sh
+    cd frontend
+    npm run dev &
+   ```
+6. Access the app at http://localhost:5173/ with
+   ```
+    login: admin
+    password: admin
    ```
 
 <!-- USAGE EXAMPLES -->
@@ -255,3 +276,5 @@ Project Link: [https://github.com/ludersGabriel/tcc](https://github.com/ludersGa
 
 [Ubuntu-url]: https://ubuntu.com/blog/tag/ubuntu-24-04-lts
 [Ubuntu-2004-url]: https://releases.ubuntu.com/focal/
+
+[tcc-url]: https://github.com/ludersGabriel/tcc/blob/master/tcc.pdf
