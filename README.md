@@ -123,6 +123,8 @@ Here you will find instructions on how to get a local version running on [Ubuntu
 
   These images also need to have [Virtualbox Guest Additions](https://www.virtualbox.org/manual/ch04.html) so we can control them with [VBoxManage](https://www.virtualbox.org/manual/ch08.html) and, due constraints of the system for file transfer, they need to have a single user that is admin and has no password.
 
+  You can get a kali ova ready to run at [kali.ova](https://www.inf.ufpr.br/gl19/TCC/kali.ova)
+
 ### Installation
 
 1. Clone the repo

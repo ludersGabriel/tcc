@@ -33,12 +33,17 @@ export const Route = createFileRoute('/')({
       const data = await client.fetchQuery(userQueryOptions)
 
       if (data?.user) {
-        redirect({
+        throw new Error('User authenticated')
+      }
+    } catch (e) {
+      if (
+        e instanceof Error &&
+        e.message === 'User authenticated'
+      ) {
+        throw redirect({
           to: '/dashboard',
         })
       }
-    } catch (e) {
-      return
     }
   },
 })
@@ -76,7 +81,7 @@ function Home() {
 
         t(data.message)
 
-        navigate({ to: '/dashboard' })
+        if (data.success) navigate({ to: '/dashboard' })
       },
     })
   }
