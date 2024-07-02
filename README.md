@@ -128,10 +128,11 @@ Here you will find instructions on how to get a local version running on [Ubuntu
 2. Install NPM packages
 
   * Backend
-  
-   ```sh
-   npm install
-   ```
+
+    ```sh
+    cd backend
+    npm install
+    ```
 3. Enter your API in `config.js`
    ```js
    const API_KEY = 'ENTER YOUR API';
