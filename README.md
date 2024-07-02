@@ -142,7 +142,7 @@ Here you will find instructions on how to get a local version running on [Ubuntu
     Also move or copy your pre-defined OVAS to `backend/src/ovas`
 
   * Frontend
-    ```
+    ```sh
       cd frontend
       npm install
     ```
@@ -152,9 +152,10 @@ Here you will find instructions on how to get a local version running on [Ubuntu
 ### Running
 
 1. Run the dockers for the database and the guacamole-daemon
-   ```
+   ```sh
     cd backend
     docker compose up -d
+    docker ps # ve
    ```
 
 <!-- USAGE EXAMPLES -->
