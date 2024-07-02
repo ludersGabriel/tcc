@@ -73,6 +73,7 @@ export function useRequests() {
         },
       }).then((res) => res.json())
     },
+    refetchInterval: 5 * 1000,
   })
 
   return {
