@@ -54,7 +54,7 @@
 
 This is a proof of concept of a virtual machine manager on the web to accelerate and facilitate the process of creating controlled systems for malware analysis and access to these environments.
 
-It was mainly tested using [Ubuntu 24.04][Ubuntu-url] and [Ubuntu 20.04][Ubuntu-2004-url]
+It was mainly tested using [Ubuntu 24.04][Ubuntu-url] and [Ubuntu 20.04][Ubuntu-2004-url] and it uses [Virtualbox][Virtualbox-url] for the orchestration of the virtual machines and [Guacamole][Guac-url] with VRDP to connect to the virtual machines through the web
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -76,7 +76,6 @@ Here you will find instructions on how to get a local version running on [Ubuntu
 ### Prerequisites
 
 * [Download and install Ubuntu 24.04](https://ubuntu.com/download/desktop)
-   
 
 * Node
   ```sh
@@ -118,6 +117,12 @@ Here you will find instructions on how to get a local version running on [Ubuntu
     virtualbox ~/Downloads/Oracle_VM_VirtualBox_Extension_Pack-7.0.18.vbox-extpack
   ```
 
+* OVAS
+
+  Since the system only manages VMs, there is a need for pre defined OVAS so virtualbox can use them to create the VMs for the users.
+
+  These images also need to have [Virtualbox Guest Additions](https://www.virtualbox.org/manual/ch04.html) so we can control them with [VBoxManage](https://www.virtualbox.org/manual/ch08.html) and, due constraints of the system for file transfer, they need to have a single user that is admin and has no password.
+
 ### Installation
 
 1. Clone the repo
@@ -128,19 +133,29 @@ Here you will find instructions on how to get a local version running on [Ubuntu
 2. Install NPM packages
 
   * Backend
-
     ```sh
     cd backend
     npm install
+    cd ..
     ```
-3. Enter your API in `config.js`
-   ```js
-   const API_KEY = 'ENTER YOUR API';
-   ```
+
+    Also move or copy your pre-defined OVAS to `backend/src/ovas`
+
+  * Frontend
+    ```
+      cd frontend
+      npm install
+    ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+### Running
 
+1. Run the dockers for the database and the guacamole-daemon
+   ```
+    cd backend
+    docker compose up -d
+   ```
 
 <!-- USAGE EXAMPLES -->
 ## Usage
