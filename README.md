@@ -36,14 +36,11 @@
       <ul>
         <li><a href="#prerequisites">Prerequisites</a></li>
         <li><a href="#installation">Installation</a></li>
+        <li><a href="#running">Running</a></li>
       </ul>
     </li>
     <li><a href="#usage">Usage</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
-    <li><a href="#contributing">Contributing</a></li>
-    <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
-    <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
 </details>
 
@@ -54,7 +51,19 @@
 
 This is a proof of concept of a virtual machine manager on the web to accelerate and facilitate the process of creating controlled systems for malware analysis and access to these environments.
 
-It was mainly tested using [Ubuntu 24.04][Ubuntu-url] and [Ubuntu 20.04][Ubuntu-2004-url] and it uses [Virtualbox][Virtualbox-url] for the orchestration of the virtual machines and [Guacamole][Guac-url] with VRDP to connect to the virtual machines through the web
+It was mainly tested using [Ubuntu 24.04][Ubuntu-url] and [Ubuntu 20.04][Ubuntu-2004-url] and it uses [Virtualbox][Virtualbox-url] for the orchestration of the virtual machines and [Guacamole][Guac-url] with VRDP to connect to the virtual machines through the web.
+
+Also, the machine it was mainly tested on has the following specs:
+
+* Architecture:             x86_64
+  - CPU op-mode(s):         32-bit, 64-bit
+  - Address sizes:          48 bits physical, 48 bits virtual
+  - Byte Order:             Little Endian
+* CPU(s):                   16
+  - On-line CPU(s) list:    0-15
+* Vendor ID:                AuthenticAMD
+  - Model name:             AMD Ryzen 7 5800H with Radeon 
+* Memory: 32 GB
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -123,7 +132,7 @@ Here you will find instructions on how to get a local version running on [Ubuntu
 
   These images also need to have [Virtualbox Guest Additions](https://www.virtualbox.org/manual/ch04.html) so we can control them with [VBoxManage](https://www.virtualbox.org/manual/ch08.html) and, due constraints of the system for file transfer, they need to have a single user that is admin and has no password.
 
-  You can get a kali ova ready to run at [kali.ova](https://www.inf.ufpr.br/gl19/TCC/kali.ova)
+  You can get a kali ova ready to run at [kali.ova](https://www.inf.ufpr.br/gl19/TCC/kali.ova). Important to note that the user in this vm is called `lurdo`. If you use this ova, you will need it later.
 
 ### Installation
 
@@ -147,6 +156,7 @@ Here you will find instructions on how to get a local version running on [Ubuntu
     ```sh
       cd frontend
       npm install
+      cd ..
     ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -154,106 +164,180 @@ Here you will find instructions on how to get a local version running on [Ubuntu
 ### Running
 
 1. Run the dockers for the database and the guacamole-daemon
+  </br>
+  Open a new terminal at `ampola` and run: 
    ```sh
     cd backend
-    docker compose up -d
-    docker ps # verify that the containers are up and running
+    docker compose up
    ```
 
-2. Apply migrations and initial seeds for the database
+2. Apply migrations and initial seeds for the database and run 
+   the backend:
+   </br>
+   Open a new terminal at `ampola` and run:
    ```sh
     npm run drizzle:migrate
     npm run drizzle:seed
+    npm run dev
    ```
-4. Run the backend
-   ```sh
-    npm run dev &
-    cd ..
-   ```
-5. Run the frontend
+
+3. Run the frontend
+   </br>
+   Open a new terminal at `ampola` and run:
    ```sh
     cd frontend
-    npm run dev &
+    npm run dev
    ```
-6. Access the app at http://localhost:5173/ with
+4. Access the app at http://localhost:5173/ with
    ```
     login: admin
     password: admin
    ```
 
+Now you should have three terminals: 
+  1. one running the guac-daemon and postgresql database within dockers
+  2. one running the backend
+  3. one running the frontend
+
+and the application accessible through the browser at http://localhost:5173/
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
+If you followed the instructions above, you should be able to connect to the application at http://localhost:5173 with a default user `{user: admin, password: admin}`. 
 
-_For more examples, please refer to the [Documentation](https://example.com)_
+Also, from the seeds, the system is configured with the default configs for memory management and concurrent vm creation, which are:
+
+```
+  total mem usage: 50%
+  concurrent vm creation: 2
+```
+
+Right now each vm is also given 4GB of RAM hardcoded at `backend/src/scripts/create.sh`.
+
+### Simple HTTP communication
+
+Here you will find a very simple use case using the kali linux ova that was given above and that should be put at `ampola/backend/src/ovas`. The objective is to give you a grasp on how to use this prototype.
+
+***
+Note that with the default configs, in order to follow this use case, you need at least 16GB of RAM, since both vms will consume a combined 8GB which is 50% of the total system RAM. You can change these configs at the Admin tab inside the dashboard from within the app.
+***
+
+1. When first connecting to http://localhost:5173 you will see:
+
+![Login image with username and password](login.png)
+
+Login with the credentials:
+```
+login: admin
+password: admin
+```
+
+1. After a successful login, you should see the dashboard:
+
+![Empty dashboard](dashboard1.png)
+
+3. Now, click on `Create VM` and fill the form with the following:
+
+![Kali server creation form](kali-server1.png)
+
+Repeat to create the client:
+
+![Kali client creation form](kali-client1.png)
+
+Some brief explanation of the fields: 
+* `Name:` name of the vm you are creating
+* `Description:` description of the vm that you are creating
+* `Username:` the username for the unique admin account with no password in the ova. For our kali machine, the username is `lurdo`
+* `ova:` ova that you are going to use as base to create the vm
+
+4. Now that you issued the requests, since the system needs a little bit of time (around 2 minutes on my machine) to configure the vms, you can check the state of your requests at the `Requests` page from the navbar. You should see something like:
+
+![Image showing table with pending requests](pending-requests.png)
+
+After it's finished processing, you should see:
+
+![Image showing table with done requests](done-requests.png)
+
+In case of error, it will give you a log of what happened. 
+
+The vms are being created right now with 4096MB (4GB) of ram each and take some disk space too. With this in mind, the most common errors are due to a lack of hardware resources. In the `Admin` tab at the navbar, you can find the default configs that came from the seed command at the instructions:
+
+![Default configs for the system](default-configs.png)
+
+This tells you that it's only allowed to have `2 concurrent machines` being created and that we can only use `50% of the total hardware memory`. Given these parameters, to be able to create both vms successfully, your system requires at least `16GB` of RAM so we can use `4GB` for each machine.
+
+If you want to change the amount of memory given for each machine right now (although not recommended), you can do it at `backend/src/scripts/create.sh` by changing the variable `MEMORY_SIZE=4096  # 4GB`.
+
+5. With the machines successfully created, go back to the `Dashboard` tab from the navbar, where you will find:
+
+![Dashboard showing vms](dashboard2.png)
+
+Now, `ctrl + left click` at the `access` of each table to open them in separate tabs. You should find this (Server - Client, from left to right):
+
+![Kali machines](kali-machines.png)
+
+When you see split images, they will have our `kali server` on the left and the `kali client` on the right.
+
+To login, just type `lurdo` in the username, hit `enter` and click `login`.
+
+![kali machines logged in](logged-kali.png)
+
+6. Lets put some files in the server so we can get it in our client. 
+
+To do this, in your own machine, outside the vms, type the following at a terminal: `echo "hello from server" > ~/server.text`. Then, open your home folder with the UI from ubuntu, drag and drop the `server.text` file to the browser window containing the server. After, you should see the text file appearing at the desktop of the server just bellow the `Home` folder icon
+
+![text file server](server2.png)
+
+Now, at your server, open a terminal and type:
+```
+  mkdir server-test
+  mv ~/Desktop/server.txt server-test
+  cd server-test
+  python -m http.server
+```
+
+![python server running](server1.png)
+
+As a final step, just open another terminal, type `ifconfig` and note the `ipv4` (the `inet` value) of your server:
+
+![alt text](server3.png)
+
+In my case I have `10.204.241.211`. The more observant of you might realize that this is the same ipv4 shown in the table at the dashboard tab where we clicked to access the vm!
+
+Right now, from your machine, you can already go to `http://server_ipv4:8000` and see our file being served!
+
+7. But to show that the vms can communicate, lets download the file through our client kali.
+
+To do this, go to your client kali browser, open a terminal and write the following:
+
+```
+  wget http://server_ip:8000/server.text
+  ls
+  cat server.text
+```
+
+![alt text](client1.png)
+
+You should see `hello from server` showing that the wget was successful and that the machines can talk to each other!
+
+That's it for this example! You can find some more interesting use cases (although with a little less documentation) at my [Final College Paper][tcc-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
-<!-- ROADMAP -->
-## Roadmap
-
-- [ ] Feature 1
-- [ ] Feature 2
-- [ ] Feature 3
-    - [ ] Nested Feature
-
-See the [open issues](https://github.com/ludersGabriel/tcc/issues) for a full list of proposed features (and known issues).
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
-<!-- CONTRIBUTING -->
-## Contributing
-
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
-
-If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
-Don't forget to give the project a star! Thanks again!
-
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
-<!-- LICENSE -->
-## License
-
-Distributed under the MIT License. See `LICENSE.txt` for more information.
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
 
 <!-- CONTACT -->
 ## Contact
 
-Your Name - [@twitter_handle](https://twitter.com/twitter_handle) - ludersdev@gmail.com.com
+Gabriel Lüders - ludersdev@gmail.com
 
 Project Link: [https://github.com/ludersGabriel/tcc](https://github.com/ludersGabriel/tcc)
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
-<!-- ACKNOWLEDGMENTS -->
-## Acknowledgments
-
-* []()
-* []()
-* []()
+Secret Lab Link: [Secret](https://secret.inf.ufpr.br/) 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
