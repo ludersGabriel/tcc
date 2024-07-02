@@ -164,15 +164,14 @@ Here you will find instructions on how to get a local version running on [Ubuntu
 ### Running
 
 1. Run the dockers for the database and the guacamole-daemon
-  </br>
-  Open a new terminal at `ampola` and run: 
+   </br>
+   Open a new terminal at `ampola` and run: 
    ```sh
     cd backend
     docker compose up
    ```
 
-2. Apply migrations and initial seeds for the database and run 
-   the backend:
+2. Apply migrations and initial seeds for the database and run the backend:
    </br>
    Open a new terminal at `ampola` and run:
    ```sh
