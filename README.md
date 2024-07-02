@@ -80,7 +80,7 @@ Also, the machine it was mainly tested on has the following specs:
 <!-- GETTING STARTED -->
 ## Getting Started
 
-Here you will find instructions on how to get a local version running on [Ubuntu 20.04][Ubuntu-url], the LTS version of Ubuntu at the time this README was written.
+Here you will find instructions on how to get a local version running on [Ubuntu 24.04][Ubuntu-url], the LTS version of Ubuntu at the time this README was written.
 
 ### Prerequisites
 
