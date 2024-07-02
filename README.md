@@ -175,6 +175,7 @@ Here you will find instructions on how to get a local version running on [Ubuntu
    </br>
    Open a new terminal at `ampola` and run:
    ```sh
+    cd backend
     npm run drizzle:migrate
     npm run drizzle:seed
     npm run dev
