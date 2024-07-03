@@ -327,6 +327,9 @@ To do this, in your own machine, outside the vms, type the following at a termin
 
 ![text file server](server2.png)
 
+If the file transfer fails, you probably gave the wrong username when creating the vm. The username for the kali ova is `lurdo`.
+
+
 Now, at your server, open a terminal and type:
 ```
   mkdir server-test
