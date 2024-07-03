@@ -34,17 +34,27 @@
     <li>
       <a href="#getting-started">Getting Started</a>
       <ul>
+        <li><a href="#hardware-requirements">Hardware requirements</a></li>
         <li><a href="#prerequisites">Prerequisites</a></li>
         <li><a href="#installation">Installation</a></li>
         <li><a href="#running">Running</a></li>
       </ul>
     </li>
-    <li><a href="#usage">Usage</a></li>
+    <li>
+    <a href="#usage">Usage</a>
+    <ul>
+      <li>
+      <a href="#simple-http-communication">Simple HTTP communication</a>
+      <ul>
+        <li><a href="#creating-the-vms">Creating the vms</a></li>
+        <li><a href="#testing-the-communication">Testing the communication</a></li>
+      </ul>
+      </li>
+    </ul>
+    </li>
     <li><a href="#contact">Contact</a></li>
   </ol>
 </details>
-
-
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
@@ -81,6 +91,22 @@ Also, the machine it was mainly tested on has the following specs:
 ## Getting Started
 
 Here you will find instructions on how to get a local version running on [Ubuntu 24.04][Ubuntu-url], the LTS version of Ubuntu at the time this README was written.
+
+### Hardware requirements
+
+The default config of the application is to use 50% of the total memory of the system and to allow only 2 vms being created at the same time. It also gives 4GB of memory to each vm. This means that, for the default configs, you need at least 16GB of RAM to be able to create two vms with 4GB of RAM each.
+
+If you want to change these configs, you can do it at the `Admin` tab inside the dashboard from within the app, except for the 4GB given to each vm, which is hardcoded at `backend/src/scripts/create.sh` right now.
+
+![Default configs for the system](default-configs.png)
+
+Just click on the row with the `main` key and change the values with the form that will show up. It's not recommended to go above `80%` of the total memory of the system, since you might just freeze your entire machine.
+
+Also, below we will provide a Kali OVA that you can use to follow the very simple use case shown in the `Usage` section. This OVA has a single user with no password and is called `lurdo` and requires at least 16GB of disk space to be imported and can grow up to 25GB.
+
+So, overall, you will need at least 16GB of RAM and 32GB/50GB of disk space to be able to follow the use case in this README.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ### Prerequisites
 
@@ -201,6 +227,8 @@ Now you should have three terminals:
 
 and the application accessible through the browser at http://localhost:5173/
 
+Keep these terminals up with the application running to be able to follow the example. If you want to stop the application, just `ctrl + c` at each terminal and then `docker compose down -v` at the terminal that is running the dockers.
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
@@ -226,6 +254,10 @@ Here you will find a very simple use case using the kali linux ova that was give
 Note that with the default configs, in order to follow this use case, you need at least 16GB of RAM, since both vms will consume a combined 8GB which is 50% of the total system RAM. You can change these configs at the Admin tab inside the dashboard from within the app.
 ***
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+#### Creating the vms
+
 1. When first connecting to http://localhost:5173 you will see:
 
 ![Login image with username and password](login.png)
@@ -236,7 +268,7 @@ login: admin
 password: admin
 ```
 
-1. After a successful login, you should see the dashboard:
+2. After a successful login, you should see the dashboard:
 
 ![Empty dashboard](dashboard1.png)
 
@@ -286,7 +318,9 @@ To login, just type `lurdo` in the username, hit `enter` and click `login`.
 
 ![kali machines logged in](logged-kali.png)
 
-6. Lets put some files in the server so we can get it in our client. 
+### Testing the communication
+
+1. Lets put some files in the server so we can get it in our client. 
 
 To do this, in your own machine, outside the vms, type the following at a terminal: `echo "hello from server" > ~/server.text`. Then, open your home folder with the UI from ubuntu, drag and drop the `server.text` file to the browser window containing the server. After, you should see the text file appearing at the desktop of the server just bellow the `Home` folder icon
 
@@ -310,7 +344,7 @@ In my case I have `10.204.241.211`. The more observant of you might realize that
 
 Right now, from your machine, you can already go to `http://server_ipv4:8000` and see our file being served!
 
-7. But to show that the vms can communicate, lets download the file through our client kali.
+2. But to show that the vms can communicate, lets download the file through our client kali.
 
 To do this, go to your client kali browser, open a terminal and write the following:
 
@@ -325,6 +359,23 @@ To do this, go to your client kali browser, open a terminal and write the follow
 You should see `hello from server` showing that the wget was successful and that the machines can talk to each other!
 
 That's it for this example! You can find some more interesting use cases (although with a little less documentation) at my [Final College Paper][tcc-url]
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- ROADMAP -->
+## Roadmap
+
+Here are some features that I would like to implement in the future to make this project more robust and the user experience better:
+
+- [ ] Change the way vms are created to use overlays
+- [ ] Make file transfer better so we can have users with passwords
+- [ ] Give more options to customize VM creation
+    - [ ] Allow network control
+    - [ ] Allow more memory control
+    - [ ] Allow more disk control
+    - [ ] Allow more CPU control
+    - [ ] Allow keyboard layout control
+- [ ] Design a proper UI
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
